@@ -38,7 +38,7 @@ int main(int argc, const char **argv)   {
 /*
     RandomNumberGenerator rng(2048);
     for (unsigned int i = 0; i < 10; i++)   {
-        cout << GenerateRandomPrime(&rng, 25) << endl;
+        cout << generate_random_prime(&rng, 25) << endl;
     }
     return 0;
 
