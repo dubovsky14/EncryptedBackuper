@@ -2,32 +2,36 @@
 
 #include <random>
 #include <vector>
+#include <string>
+
+#include <boost/multiprecision/cpp_int.hpp>
 namespace EncryptedBackuper     {
+    // TODO: Check security of this
     /* Cryptographically safe random number generator. For now just placeholder, safety will be inspected and possibly improved.  */
-    template<class IntType>
+
     class RandomNumberGenerator {
         public:
-            RandomNumberGenerator() {
-                m_size_of_return_type = sizeof(IntType);
-                m_generated_values.resize(m_size_of_return_type/sizeof(unsigned int) + 1);
+            RandomNumberGenerator(unsigned int return_size) {
+                if (return_size % 32 != 0)    {
+                    throw std::string("RandomnumberGenerator: Invalid return size, only multiples of 32 are allowed!");
+                }
+                m_size_of_return_type = return_size;
             };
 
-            IntType Random()    {
-                for (auto &x : m_generated_values)  {
-                    x = m_rd();
+            boost::multiprecision::cpp_int Random()    {
+                boost::multiprecision::cpp_int result = 0;
+                for (unsigned int i_block = 0; i_block < m_size_of_return_type/32; i_block++)   {
+                    result *= 4294967296;
+                    result += m_rd() % 4294967296;
                 }
-                const IntType result = *(reinterpret_cast<IntType *>(&m_generated_values[0]));
-                if (result > 0) {
-                    return result;
-                }
-                return Random();
+                return result;
             };
 
+            RandomNumberGenerator()                                 = delete;
             RandomNumberGenerator(const RandomNumberGenerator& x)   = delete;
 
         private:
-            size_t                      m_size_of_return_type;
-            std::vector<unsigned int>   m_generated_values;
+            unsigned int                m_size_of_return_type;
             std::random_device          m_rd;
     };
 }
