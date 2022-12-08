@@ -25,7 +25,7 @@ namespace EncryptedBackuper     {
                                                             const boost::multiprecision::cpp_int &public_key,
                                                             bool *key_is_valid);
 
-    /* Square and multiply algorithm. It returns "pow(base, exponent) % modulo" */
+    /* Square and multiply algorithm. It returns "pow(base, exponent) % modulo". If modulo == 0, return  pow(base, exponent)*/
     boost::multiprecision::cpp_int square_and_multiply( const boost::multiprecision::cpp_int &base,
                                                         const boost::multiprecision::cpp_int &exponent,
                                                         const boost::multiprecision::cpp_int &modulo);

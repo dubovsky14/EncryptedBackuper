@@ -19,12 +19,12 @@ vector<cpp_int> EncryptedBackuper::extended_euclidean_algorithm(const cpp_int &a
 
 cpp_int EncryptedBackuper::calculate_private_key(const cpp_int &euler_phi, const cpp_int &public_key, bool *key_is_valid)    {
     vector<cpp_int> ext_euclid_result = extended_euclidean_algorithm(euler_phi, public_key);
-    *key_is_valid = (ext_euclid_result[0] == 1);
-    cpp_int result =  ext_euclid_result[2];
-    while (result < 0)  {
-        result += euler_phi;
+    *key_is_valid = (ext_euclid_result[0] == 1);    // checking if euler_phi and public_key are relative primes (i.e. gcd == 1)
+    cpp_int private_key =  ext_euclid_result[2];
+    while (private_key < 0)  {
+        private_key += euler_phi;
     }
-    return result;
+    return private_key;
 };
 
 cpp_int EncryptedBackuper::square_and_multiply(const cpp_int &base, const cpp_int &exponent, const cpp_int &modulo) {
@@ -33,11 +33,15 @@ cpp_int EncryptedBackuper::square_and_multiply(const cpp_int &base, const cpp_in
     cpp_int result = base;
     for (unsigned int i_bit = 1; i_bit < binary_representation.size(); i_bit++) {
         result *= result;
-        result = cpp_int(result % modulo);
+        if (modulo != 0)    {
+            result = cpp_int(result % modulo);
+        }
 
         if (binary_representation[i_bit])    {
             result *= base;
-            result = cpp_int(result % modulo);
+            if (modulo != 0)    {
+                result = cpp_int(result % modulo);
+            }
         }
     }
     return result;
