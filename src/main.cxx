@@ -15,7 +15,7 @@ int main(int argc, const char **argv)   {
 
     bool valid_key = false;
     while (!valid_key) {
-        valid_key = generate_rsa_keys(&pq, &private_key, public_key, 2048);
+        valid_key = generate_rsa_keys(&pq, &private_key, public_key, 512);
     }
     cout << "pq = " << pq << endl;
     cout << "key_private = " << private_key << endl;
