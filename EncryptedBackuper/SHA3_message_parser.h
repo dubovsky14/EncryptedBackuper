@@ -26,9 +26,11 @@ namespace EncryptedBackuper {
             std::shared_ptr<std::string>                    m_input_string  = nullptr;
             std::shared_ptr<std::ifstream>                  m_input_file    = nullptr;
 
-            unsigned long long int      m_unpadded_input_length_bits = 0;
-            unsigned long long int      m_number_of_blocks           = 0;
-            unsigned long long int      m_current_block_index        = 0;
+            unsigned long long int      m_unpadded_input_length_bits        = 0;
+            unsigned long long int      m_number_of_blocks                  = 0;
+            unsigned long long int      m_number_of_blocks_wo_padding_bits  = 0;
+            unsigned long long int      m_current_block_index               = 0;
+
 
 
             static uint64_t get_file_size(const std::string &file_address);
