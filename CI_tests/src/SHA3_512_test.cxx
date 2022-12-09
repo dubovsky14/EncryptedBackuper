@@ -17,8 +17,4 @@ void EncryptedBackuperTests::SHA3_512_test()  {
     //cout << bitset<32>(u1) << endl;
     //cout << bitset<32>(u2) << endl;
 
-
-    for (unsigned int i_round = 0; i_round < 24; i_round++) {
-        cout << SHA3_512_Calculator::s_round_constants[i_round] << endl;
-    }
 }

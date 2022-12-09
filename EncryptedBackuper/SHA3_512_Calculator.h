@@ -1,6 +1,10 @@
 #pragma once
 
+#include "../EncryptedBackuper/SHA3_message_parser.h"
+
 #include <boost/multiprecision/cpp_int.hpp>
+
+#include <memory>
 
 #include <string>
 
@@ -11,13 +15,45 @@ namespace EncryptedBackuper {
 
             void reset_state();
 
-            void  hash_gile(const std::string &input_file);
+            void  hash_file(const std::string &input_file);
 
             void  hash_message(const std::string &message);
 
             void  hash_message(const boost::multiprecision::cpp_int &message);
 
             boost::multiprecision::cpp_int get_hash();
+
+        private:
+            unsigned long long int  m_state[5][5];
+            unsigned long long int  m_B_array[5][5]; // array calculated by rho and phi steps
+
+            std::shared_ptr<SHA3_message_parser>    m_message_parser   = nullptr;
+
+            void keccak_f_function();
+
+            void theta();
+            void rho_and_pi();
+            void chi();
+            void iota(unsigned int i_round);
+
+            static unsigned int mod(int number, int modulo);
+
+            void iterate_over_message();
+
+            template<typename InputType>
+            static InputType circular_bit_shift(InputType input, unsigned int shift_size)   {
+                unsigned int input_size = 8*sizeof(input);
+                shift_size = mod(shift_size, input_size);
+                return (InputType)(InputType)(input << shift_size) | (InputType)(input >> mod(input_size - shift_size, input_size));
+            };
+
+            static constexpr unsigned int s_rotation_offsets[5][5]    =   {
+                {0,36,3,41,18},
+                {1,44,10,45,2},
+                {62,6,43,15,61},
+                {28,55,25,21,56},
+                {27,20,39,8,14},
+            };
 
             static constexpr unsigned long long int s_round_constants[24]    =   {
                 0x0000000000000001,
@@ -45,35 +81,6 @@ namespace EncryptedBackuper {
                 0x0000000080000001,
                 0x8000000080008008,
             };
-
-        private:
-            unsigned long long int  m_state[5][5];
-            unsigned long long int  m_B_array[5][5]; // array calculated by rho and phi steps
-
-            void keccak_f_function();
-
-            void theta();
-            void rho_and_pi();
-            void chi();
-            void iota(unsigned int i_round);
-
-            static unsigned int mod(int number, int modulo);
-
-            template<typename InputType>
-            static InputType circular_bit_shift(InputType input, unsigned int shift_size)   {
-                unsigned int input_size = 8*sizeof(input);
-                shift_size = mod(shift_size, input_size);
-                return (InputType)(InputType)(input << shift_size) | (InputType)(input >> mod(input_size - shift_size, input_size));
-            };
-
-            static constexpr unsigned int s_rotation_offsets[5][5]    =   {
-                {0,36,3,41,18},
-                {1,44,10,45,2},
-                {62,6,43,15,61},
-                {28,55,25,21,56},
-                {27,20,39,8,14},
-            };
-
     };
 
 

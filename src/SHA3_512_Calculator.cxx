@@ -8,6 +8,33 @@ using namespace std;
 using namespace EncryptedBackuper;
 using boost::multiprecision::cpp_int;
 
+SHA3_512_Calculator::SHA3_512_Calculator()  {
+    reset_state();
+};
+
+void SHA3_512_Calculator::reset_state() {
+    for (int i_x = 0; i_x < 5; i_x++)   {
+        for (int i_y = 0; i_y < 5; i_y++)   {
+            m_state[i_x][i_y] = 0;
+        }
+    }
+};
+
+void  SHA3_512_Calculator::hash_file(const std::string &input_file)  {
+    m_message_parser = make_shared<SHA3_message_parser>(input_file, EncryptedBackuper::SHA3_input_type::enum_file);
+    iterate_over_message();
+};
+
+void  SHA3_512_Calculator::hash_message(const std::string &message)  {
+    m_message_parser = make_shared<SHA3_message_parser>(message, EncryptedBackuper::SHA3_input_type::enum_string);
+    iterate_over_message();
+};
+
+void  SHA3_512_Calculator::hash_message(const boost::multiprecision::cpp_int &message)   {
+    m_message_parser = make_shared<SHA3_message_parser>(message);
+    iterate_over_message();
+};
+
 void SHA3_512_Calculator::keccak_f_function()   {
     for (unsigned int i_round = 0; i_round < 24; i_round++) {
         theta();
@@ -15,7 +42,7 @@ void SHA3_512_Calculator::keccak_f_function()   {
         chi();
         iota(i_round);
     }
-}
+};
 
 void SHA3_512_Calculator::theta()   {
     for (int i_x = 0; i_x < 5; i_x++)   {
@@ -66,6 +93,13 @@ unsigned int SHA3_512_Calculator::mod(int number, int modulo)   {
         result += modulo;
     }
     return result;
+};
+
+void SHA3_512_Calculator::iterate_over_message()    {
+    unsigned int message[19];
+    while(m_message_parser->get_block(message)) {
+
+    }
 };
 
 cpp_int EncryptedBackuper::SHA3_512(const std::string &message);
