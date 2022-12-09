@@ -11,10 +11,9 @@ using boost::multiprecision::cpp_int;
 void SHA3_512_Calculator::keccak_f_function()   {
     for (unsigned int i_round = 0; i_round < 24; i_round++) {
         theta();
-        rho();
-        pi();
+        rho_and_pi();
         chi();
-        iota();
+        iota(i_round);
     }
 }
 
@@ -41,20 +40,24 @@ void SHA3_512_Calculator::theta()   {
     }
 };
 
-void SHA3_512_Calculator::rho() {
-
-};
-
-void SHA3_512_Calculator::pi()  {
-
+void SHA3_512_Calculator::rho_and_pi() {
+    for (int i_x = 0; i_x < 5; i_x++)   {
+        for (int i_y = 0; i_y < 5; i_y++)   {
+            m_B_array[i_y][mod(2*i_x + 3*i_y, 5)] = SHA3_512_Calculator::circular_bit_shift(m_state[i_x][i_y], s_rotation_offsets[i_x][i_y]);
+        }
+    }
 };
 
 void SHA3_512_Calculator::chi() {
-
+    for (int i_x = 0; i_x < 5; i_x++)   {
+        for (int i_y = 0; i_y < 5; i_y++)   {
+            m_state[i_x][i_y] = m_B_array[i_x][i_y] ^ ((~m_B_array[(i_x+1) % 5][i_y]) & m_B_array[(i_x+2) % 5][i_y]);
+        }
+    }
 };
 
-void SHA3_512_Calculator::iota()    {
-
+void SHA3_512_Calculator::iota(unsigned int i_round)    {
+    m_state[0][0] = m_state[0][0] ^ s_round_constants[i_round];
 };
 
 unsigned int SHA3_512_Calculator::mod(int number, int modulo)   {
