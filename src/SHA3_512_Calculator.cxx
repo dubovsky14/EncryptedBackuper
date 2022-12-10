@@ -38,10 +38,16 @@ void  SHA3_512_Calculator::hash_message(const boost::multiprecision::cpp_int &me
 boost::multiprecision::cpp_int SHA3_512_Calculator::get_hash()   {
     const cpp_int two_to_64 = cpp_int("0x10000000000000000");
     cpp_int result = 0;
+
     const unsigned long long *state = reinterpret_cast<const unsigned long long *>(m_state);
-    for (unsigned int i = 0; i < 8; i++)   {
-        result *= two_to_64;
-        result += state[i];
+
+    for (unsigned int i_word = 0; i_word < 8; i_word++)   {
+        unsigned char bytes[8];
+        memcpy(bytes, &state[i_word], 8);
+        for (int i_byte = 0; i_byte < 8; i_byte++)   {
+            result *= 256;
+            result += bytes[i_byte];
+        }
     }
     return result;
 };
@@ -56,24 +62,26 @@ void SHA3_512_Calculator::keccak_f_function()   {
 };
 
 void SHA3_512_Calculator::theta()   {
+    unsigned long long int C[5];
+    unsigned long long int D[5];
+
     for (int i_x = 0; i_x < 5; i_x++)   {
-        unsigned int sum_x_minus_one    = 0;    // XOR between all columns in (i_x-1) line
-        unsigned int i_x_minus_one      = SHA3_512_Calculator::mod(i_x-1, 5);
-        unsigned int rot_sum_x_plus_one = 0;    // XOR between all columns in (i_x+1) line with circular shift of -1 bit
-        unsigned int i_x_plus_one       = SHA3_512_Calculator::mod(i_x+1, 5);
+        C[i_x]  = m_state[0][(i_x + 4) % 5];
+        D[i_x]  = m_state[0][(i_x + 1) % 5];
 
         // calculate sum of the previous and next "layers" in x direction
-        for (int i_y = 0; i_y < 5; i_y++)   {
-            sum_x_minus_one     = sum_x_minus_one    ^ m_state[i_x_minus_one][i_y];
-            rot_sum_x_plus_one  = rot_sum_x_plus_one ^ m_state[i_x_plus_one] [i_y];
+        for (int i_y = 1; i_y < 5; i_y++)   {
+            C[i_x]  = C[i_x] ^ m_state[i_y][(i_x + 4) % 5];
+            D[i_x]  = D[i_x] ^ m_state[i_y][(i_x + 1) % 5];
         }
 
         // rotate rot_sum_x_plus_one by one bit
-        rot_sum_x_plus_one = SHA3_512_Calculator::circular_bit_shift(rot_sum_x_plus_one, -1);
-
+        D[i_x] = SHA3_512_Calculator::circular_bit_shift(D[i_x], 1);
+    }
+    for (int i_x = 0; i_x < 5; i_x++)   {
         // calculate sum of the previous and next "layers" in x direction
         for (int i_y = 0; i_y < 5; i_y++)   {
-            m_state[i_x][i_y]     = m_state[i_x][i_y] ^ rot_sum_x_plus_one ^ sum_x_minus_one;
+            m_state[i_y][i_x]     = m_state[i_y][i_x] ^ D[i_x] ^ C[i_x];
         }
     }
 };
@@ -81,7 +89,7 @@ void SHA3_512_Calculator::theta()   {
 void SHA3_512_Calculator::rho_and_pi() {
     for (int i_x = 0; i_x < 5; i_x++)   {
         for (int i_y = 0; i_y < 5; i_y++)   {
-            m_B_array[i_y][mod(2*i_x + 3*i_y, 5)] = SHA3_512_Calculator::circular_bit_shift(m_state[i_x][i_y], s_rotation_offsets[i_x][i_y]);
+            m_B_array[mod(2*i_x + 3*i_y, 5)][i_y] = SHA3_512_Calculator::circular_bit_shift(m_state[i_y][i_x], s_rotation_offsets[i_x][i_y]);
         }
     }
 };
@@ -89,7 +97,7 @@ void SHA3_512_Calculator::rho_and_pi() {
 void SHA3_512_Calculator::chi() {
     for (int i_x = 0; i_x < 5; i_x++)   {
         for (int i_y = 0; i_y < 5; i_y++)   {
-            m_state[i_x][i_y] = m_B_array[i_x][i_y] ^ ((~m_B_array[(i_x+1) % 5][i_y]) & m_B_array[(i_x+2) % 5][i_y]);
+            m_state[i_y][i_x] = m_B_array[i_y][i_x] ^ ((~m_B_array[i_y][(i_x+1) % 5]) & m_B_array[i_y][(i_x+2) % 5]);
         }
     }
 };
@@ -110,15 +118,12 @@ void SHA3_512_Calculator::iterate_over_message()    {
     unsigned int message[18];
     unsigned int *state_as_32bit_uints = reinterpret_cast<unsigned int* >(m_state);
 
-    cout << "Padded message: \n";
     while(m_message_parser->get_block(message)) {
         for (unsigned int i = 0; i < 18; i++)   {
-            cout << std::bitset<32>(message[i]) << endl;
             state_as_32bit_uints[i] = state_as_32bit_uints[i] ^ message[i];
         }
         keccak_f_function();
     }
-    cout << endl;
 };
 
 

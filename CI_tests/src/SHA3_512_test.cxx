@@ -1,16 +1,27 @@
 #include "../../CI_tests/headers/SHA3_512_test.h"
 
 #include "../../EncryptedBackuper/SHA3_512_Calculator.h"
+#include "../../EncryptedBackuper/RSA_related_math_functions.h"
 
 #include <iostream>
 #include <string>
 #include <bitset>
 #include <map>
+#include <vector>
 
 using namespace std;
 using namespace EncryptedBackuper;
 using namespace EncryptedBackuperTests;
 using namespace boost::multiprecision;
+
+string cpp_to_binary_string(const cpp_int &number)   {
+    vector<unsigned char> bits =  get_representation_in_base_n(number, 2);
+    string result = "";
+    for (unsigned char bit : bits) {
+        result = to_string(bit!=0) + result;
+    }
+    return result;
+}
 
 void EncryptedBackuperTests::SHA3_512_test()  {
 
@@ -27,8 +38,10 @@ void EncryptedBackuperTests::SHA3_512_test()  {
         const cpp_int hash_calculated = sha3_calculator.get_hash();
 
         cout << "Message: " << input_string << endl;
+        //cout << "Calculated hash: " << cpp_to_binary_string(hash_calculated) << endl;
+        //cout << "Correct hash: " << cpp_to_binary_string(hash_correct) << endl;
         cout << "Calculated hash: " << std::hex << hash_calculated << endl;
-        cout << "Correct hash: " << std::hex << hash_correct << endl;
+        cout << "Correct hash:    " << std::hex << hash_correct << endl;
 
         if (hash_correct != hash_calculated)    {
             throw std::string("Calculated hash does not match the correct hash defined in the test!");

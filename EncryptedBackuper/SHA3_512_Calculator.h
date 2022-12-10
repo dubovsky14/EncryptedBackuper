@@ -48,11 +48,11 @@ namespace EncryptedBackuper {
             };
 
             static constexpr unsigned int s_rotation_offsets[5][5]    =   {
-                {0,36,3,41,18},
-                {1,44,10,45,2},
-                {62,6,43,15,61},
-                {28,55,25,21,56},
-                {27,20,39,8,14},
+                {0,36,3,105,210},
+                {1,300,10,45,66},
+                {190,6,171,15,253},
+                {28,55,153,21,120},
+                {91,276,231,136,78},
             };
 
             static constexpr unsigned long long int s_round_constants[24]    =   {
