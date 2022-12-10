@@ -29,7 +29,7 @@ bool SHA3_message_parser::get_block(unsigned int *output)   {
 
         // blocks that do not contain any padding, we just need to copy the data
         if (m_current_block_index < m_number_of_blocks_wo_padding_bits) {
-            memcpy(output, &((*m_input_string)[72*m_current_block_index]), 19);
+            memcpy(output, &((*m_input_string)[72*m_current_block_index]), 72);
         }
         // the last block of the original data can be either only data, or data+padding
         else if (m_current_block_index == m_number_of_blocks_wo_padding_bits)    {
