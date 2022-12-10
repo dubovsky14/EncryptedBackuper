@@ -12,6 +12,7 @@ SHA3_message_parser::SHA3_message_parser(const std::string &input, SHA3_input_ty
         m_input_string = make_shared<string>(input);
         m_unpadded_input_length_bits = 8*input.length();
     }
+    initialize_padding_length();
 };
 
 SHA3_message_parser::SHA3_message_parser(const boost::multiprecision::cpp_int &input)   {
@@ -20,6 +21,10 @@ SHA3_message_parser::SHA3_message_parser(const boost::multiprecision::cpp_int &i
 };
 
 bool SHA3_message_parser::get_block(unsigned int *output)   {
+    if (m_current_block_index == m_number_of_blocks)    {
+        return false;
+    }
+
     if (m_input_string) {
 
         // blocks that do not contain any padding, we just need to copy the data
@@ -39,14 +44,14 @@ bool SHA3_message_parser::get_block(unsigned int *output)   {
 
                 // if padding is one byte only
                 if (m_padding_length == 8)  {
-                    output_bytes[71] = 0b01100001;
+                    output_bytes[71] = 0b10000110;
                 }
                 else {
-                    output_bytes[number_of_original_bytes] = 0b01100000;
-                    for (unsigned i_byte = number_of_original_bytes+1; i_byte < 71; i_byte)   {
+                    output_bytes[number_of_original_bytes] = 0b00000110;
+                    for (unsigned i_byte = number_of_original_bytes+1; i_byte < 71; i_byte++)   {
                         output_bytes[i_byte] = 0;
                     }
-                    output_bytes[71] = 0b00000001;
+                    output_bytes[71] = 0b10000000;
                 }
             }
         }
@@ -55,16 +60,16 @@ bool SHA3_message_parser::get_block(unsigned int *output)   {
             const short int number_of_original_bytes = (m_unpadded_input_length_bits % s_output_length_bits)/8;
             unsigned char *output_bytes = reinterpret_cast<unsigned char *>(output);
 
-            output_bytes[0] = 0b01100000;
-            for (unsigned i_byte = number_of_original_bytes+1; i_byte < 71; i_byte)   {
+            output_bytes[0] = 0b00000110;
+            for (unsigned i_byte = 1; i_byte < 71; i_byte++)   {
                 output_bytes[i_byte] = 0;
             }
-            output_bytes[71] = 0b00000001;
+            output_bytes[71] = 0b10000000;
         }
     }
 
     m_current_block_index++;
-    return (m_number_of_blocks != m_current_block_index);
+    return true;
 };
 
 uint64_t SHA3_message_parser::get_file_size(const std::string &file_address) {

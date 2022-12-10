@@ -35,6 +35,17 @@ void  SHA3_512_Calculator::hash_message(const boost::multiprecision::cpp_int &me
     iterate_over_message();
 };
 
+boost::multiprecision::cpp_int SHA3_512_Calculator::get_hash()   {
+    const cpp_int two_to_64 = cpp_int("0x10000000000000000");
+    cpp_int result = 0;
+    const unsigned long long *state = reinterpret_cast<const unsigned long long *>(m_state);
+    for (unsigned int i = 0; i < 8; i++)   {
+        result *= two_to_64;
+        result += state[i];
+    }
+    return result;
+};
+
 void SHA3_512_Calculator::keccak_f_function()   {
     for (unsigned int i_round = 0; i_round < 24; i_round++) {
         theta();
@@ -96,11 +107,20 @@ unsigned int SHA3_512_Calculator::mod(int number, int modulo)   {
 };
 
 void SHA3_512_Calculator::iterate_over_message()    {
-    unsigned int message[19];
-    while(m_message_parser->get_block(message)) {
+    unsigned int message[18];
+    unsigned int *state_as_32bit_uints = reinterpret_cast<unsigned int* >(m_state);
 
+    cout << "Padded message: \n";
+    while(m_message_parser->get_block(message)) {
+        for (unsigned int i = 0; i < 18; i++)   {
+            cout << std::bitset<32>(message[i]) << endl;
+            state_as_32bit_uints[i] = state_as_32bit_uints[i] ^ message[i];
+        }
+        keccak_f_function();
     }
+    cout << endl;
 };
+
 
 cpp_int EncryptedBackuper::SHA3_512(const std::string &message);
 
