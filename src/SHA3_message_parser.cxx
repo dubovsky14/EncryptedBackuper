@@ -7,6 +7,9 @@ SHA3_message_parser::SHA3_message_parser(const std::string &input, SHA3_input_ty
     set_output_block_size(block_size_bits);
     if  (input_type == SHA3_input_type::enum_file)   {
         m_input_file = make_shared<ifstream>(input, std::ios::binary | std::ios::in);
+        if (m_input_file->fail())   {
+            throw std::string("File \"" + input +  "\" does not exist!");
+        }
         m_unpadded_input_length_bits = 8*get_file_size(input);
     }
     else if (input_type == SHA3_input_type::enum_string)   {
