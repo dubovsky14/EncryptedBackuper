@@ -9,9 +9,12 @@
 #include <string>
 
 namespace EncryptedBackuper {
-    class SHA3_512_Calculator   {
+    class SHA3Calculator   {
         public:
-            SHA3_512_Calculator();
+            SHA3Calculator()   = delete;
+
+            /* output size = 512 for SHA3-512, 256 for SHA3-256 etc. */
+            SHA3Calculator(unsigned int output_size);
 
             void reset_state();
 
@@ -27,6 +30,7 @@ namespace EncryptedBackuper {
             unsigned long long int  m_state[5][5];
             unsigned long long int  m_B_array[5][5]; // array calculated by rho and phi steps
 
+
             std::shared_ptr<SHA3_message_parser>    m_message_parser   = nullptr;
 
             void keccak_f_function();
@@ -39,6 +43,10 @@ namespace EncryptedBackuper {
             static unsigned int mod(int number, int modulo);
 
             void iterate_over_message();
+
+            unsigned int            m_output_size_bits;
+            unsigned int            m_input_block_size_bits;
+            void                    set_number_of_output_bits(unsigned int number_of_output_bits);  // 512 = SHA3-512, 256 = SHA3-256, etc.
 
             template<typename InputType>
             static InputType circular_bit_shift(InputType input, unsigned int shift_size)   {
