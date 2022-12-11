@@ -22,6 +22,9 @@ namespace EncryptedBackuper {
 
             void  hash_message(const std::string &message);
 
+            /* will run the Keccak function again (hash the current state), it will update the state and returns the new hash*/
+            boost::multiprecision::cpp_int apply_next_keccak_and_get_output();
+
             boost::multiprecision::cpp_int get_hash();
 
         private:
@@ -90,4 +93,6 @@ namespace EncryptedBackuper {
     };
 
     unsigned long long int get_bit_length(const boost::multiprecision::cpp_int &number);
+
+    boost::multiprecision::cpp_int calculate_sha3(const std::string &message, unsigned int sha3_type);
 }

@@ -50,6 +50,11 @@ boost::multiprecision::cpp_int SHA3Calculator::get_hash()   {
     return result;
 };
 
+boost::multiprecision::cpp_int SHA3Calculator::apply_next_keccak_and_get_output()  {
+    keccak_f_function();
+    return get_hash();
+}
+
 void SHA3Calculator::keccak_f_function()   {
     for (unsigned int i_round = 0; i_round < 24; i_round++) {
         theta();
@@ -145,4 +150,11 @@ void SHA3Calculator::set_number_of_output_bits(unsigned int number_of_output_bit
     else {
         throw std::string("Unknown SHA3 bit length: " + std::to_string(number_of_output_bits));
     }
+};
+
+
+boost::multiprecision::cpp_int EncryptedBackuper::calculate_sha3(const string &message, unsigned int sha3_type) {
+    SHA3Calculator password_hasher(sha3_type);
+    password_hasher.hash_message(message);
+    return password_hasher.get_hash();
 };

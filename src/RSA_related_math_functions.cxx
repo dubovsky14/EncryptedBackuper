@@ -59,7 +59,7 @@ bool EncryptedBackuper::generate_rsa_keys( cpp_int *pq,
                         cpp_int *private_key,
                         const cpp_int &public_key,
                         unsigned int key_size)  {
-    RandomNumberGenerator rng(key_size);
+    RandomNumberGenerator rng(key_size/2);
     cpp_int p = generate_random_prime(&rng);
     cpp_int q = generate_random_prime(&rng);
     cpp_int euler_phi = (p-1)*(q-1);
@@ -78,5 +78,15 @@ vector<unsigned char> EncryptedBackuper::get_representation_in_base_n(const cpp_
         x = cpp_int(x/base);
     }
     reverse(result.begin(), result.end());
+    return result;
+};
+
+std::string EncryptedBackuper::convert_cpp_int_to_string(const boost::multiprecision::cpp_int &number) {
+    const string hex_chars("0123456789abcdef");
+    string result = "";
+    vector<unsigned char> hex_representation = get_representation_in_base_n(number, 16);
+    for (unsigned char x : hex_representation)  {
+        result = result+hex_chars[x];
+    }
     return result;
 };
