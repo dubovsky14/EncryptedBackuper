@@ -16,6 +16,9 @@ int main(int argc, const char **argv)   {
         const string test_type = argv[1];
 
         if      (test_type == "RSA-512")  RSA_test(512);
+        else if (test_type == "SHA3-224") SHA3_test(224);
+        else if (test_type == "SHA3-256") SHA3_test(256);
+        else if (test_type == "SHA3-384") SHA3_test(384);
         else if (test_type == "SHA3-512") SHA3_test(512);
         else   {
             throw string("Unkown test: \"" + test_type + "\'");

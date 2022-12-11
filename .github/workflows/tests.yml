@@ -37,7 +37,7 @@ jobs:
               chmod u+x tests
               ./tests RSA-512
 
-  SHA3-512-validation:
+  SHA3-384-validation:
     runs-on: ubuntu-latest
     needs: [build-linux]
     steps:
@@ -51,4 +51,38 @@ jobs:
           name: artifact-linux-build
       - run:  |
               chmod u+x tests
-              ./tests SHA3-512
+              ./tests SHA3-384
+
+
+  SHA3-256-validation:
+    runs-on: ubuntu-latest
+    needs: [build-linux]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - uses: actions/download-artifact@v3
+        name: Download linux build
+        with:
+          name: artifact-linux-build
+      - run:  |
+              chmod u+x tests
+              ./tests SHA3-256
+
+
+  SHA3-224-validation:
+    runs-on: ubuntu-latest
+    needs: [build-linux]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - uses: actions/download-artifact@v3
+        name: Download linux build
+        with:
+          name: artifact-linux-build
+      - run:  |
+              chmod u+x tests
+              ./tests SHA3-224
