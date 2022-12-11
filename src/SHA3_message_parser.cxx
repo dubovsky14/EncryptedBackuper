@@ -16,12 +16,6 @@ SHA3_message_parser::SHA3_message_parser(const std::string &input, SHA3_input_ty
     initialize_padding_length();
 };
 
-SHA3_message_parser::SHA3_message_parser(const boost::multiprecision::cpp_int &input, unsigned int block_size_bits)   {
-    set_output_block_size(block_size_bits);
-    m_input_cpp_int = make_shared<boost::multiprecision::cpp_int>(input);
-    m_unpadded_input_length_bits = msb(input);
-};
-
 bool SHA3_message_parser::get_block(unsigned int *output)   {
     if (m_current_block_index == m_number_of_blocks)    {
         return false;

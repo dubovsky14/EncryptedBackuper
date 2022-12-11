@@ -31,11 +31,6 @@ void  SHA3Calculator::hash_message(const std::string &message)  {
     iterate_over_message();
 };
 
-void  SHA3Calculator::hash_message(const boost::multiprecision::cpp_int &message)   {
-    m_message_parser = make_shared<SHA3_message_parser>(message, m_input_block_size_bits);
-    iterate_over_message();
-};
-
 boost::multiprecision::cpp_int SHA3Calculator::get_hash()   {
     cpp_int result = 0;
 
@@ -151,10 +146,3 @@ void SHA3Calculator::set_number_of_output_bits(unsigned int number_of_output_bit
         throw std::string("Unknown SHA3 bit length: " + std::to_string(number_of_output_bits));
     }
 };
-
-
-cpp_int EncryptedBackuper::SHA3_512(const std::string &message);
-
-cpp_int EncryptedBackuper::SHA3_512_from_file(const std::string &input_file);
-
-cpp_int EncryptedBackuper::SHA3_512(const cpp_int &message);

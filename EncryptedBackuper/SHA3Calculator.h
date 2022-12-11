@@ -22,8 +22,6 @@ namespace EncryptedBackuper {
 
             void  hash_message(const std::string &message);
 
-            void  hash_message(const boost::multiprecision::cpp_int &message);
-
             boost::multiprecision::cpp_int get_hash();
 
         private:
@@ -90,14 +88,6 @@ namespace EncryptedBackuper {
                 0x8000000080008008,
             };
     };
-
-
-    boost::multiprecision::cpp_int SHA3_512(const std::string &message);
-
-    boost::multiprecision::cpp_int SHA3_512_from_file(const std::string &input_file);
-
-    boost::multiprecision::cpp_int SHA3_512(const boost::multiprecision::cpp_int &message);
-
 
     unsigned long long int get_bit_length(const boost::multiprecision::cpp_int &number);
 }

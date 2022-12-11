@@ -12,13 +12,12 @@ namespace EncryptedBackuper {
 
     class SHA3_message_parser   {
         public:
+            SHA3_message_parser() = delete;
+
             /* Either open input file at "input" address or process input as a message, depending on input type*/
-            SHA3_message_parser(const std::string &input, SHA3_input_type input_type, unsigned int block_size_bits = 576);
+            SHA3_message_parser(const std::string &input, SHA3_input_type input_type, unsigned int block_size_bits);
 
-            /* Parse cpp_int*/
-            SHA3_message_parser(const boost::multiprecision::cpp_int &input, unsigned int block_size_bits = 576);
-
-            /* Read block of 576 bits (72 bytes = 9 unsigned integers). Return false if there is no more the message to be parsed. */
+            /* Read one block (for example 576 bits for SHA-512). Return false if there is no more the message to be parsed. */
             bool get_block(unsigned int *output);
 
             unsigned int get_block_size_bits()   const   {return m_output_length_bits;};
