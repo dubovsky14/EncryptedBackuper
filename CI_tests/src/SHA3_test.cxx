@@ -23,7 +23,7 @@ string cpp_to_binary_string(const cpp_int &number)   {
     return result;
 }
 
-void EncryptedBackuperTests::SHA3_test(unsigned int sha_type)  {
+void EncryptedBackuperTests::SHA3_test_sample_strings(unsigned int sha_type)  {
     cout << "Going to run the test for SHA3-" << sha_type << ".\n";
 
     vector< map<int,string> >   sample_hashes({
@@ -75,3 +75,25 @@ void EncryptedBackuperTests::SHA3_test(unsigned int sha_type)  {
         cout << endl;
     }
 }
+
+void EncryptedBackuperTests::SHA3_test_file(unsigned int sha_type, int argc, const char **argv)  {
+    if (argc != 4)  {
+        throw std::string("Three input arguments are required! Test type, file address and hash");
+    }
+    cout << "Going to run the test for SHA3-" << sha_type << ".\n";
+
+    const string file_address = argv[2];
+    const cpp_int hash_correct = cpp_int(string(argv[3]));
+    SHA3Calculator sha3_calculator(sha_type);
+    sha3_calculator.hash_file(file_address);
+    const cpp_int hash_calculated = sha3_calculator.get_hash();
+
+    cout << "File: " << file_address << endl;
+    cout << "Calculated hash: " << std::hex << hash_calculated << endl;
+    cout << "Correct hash:    " << std::hex << hash_correct << endl;
+
+    if (hash_correct != hash_calculated)    {
+        throw std::string("Calculated hash does not match the correct hash defined in the test!");
+    }
+    cout << endl;
+};

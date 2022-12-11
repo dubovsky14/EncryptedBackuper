@@ -7,7 +7,7 @@ SHA3_message_parser::SHA3_message_parser(const std::string &input, SHA3_input_ty
     set_output_block_size(block_size_bits);
     if  (input_type == SHA3_input_type::enum_file)   {
         m_input_file = make_shared<ifstream>(input, std::ios::binary | std::ios::in);
-        m_unpadded_input_length_bits = get_file_size(input);
+        m_unpadded_input_length_bits = 8*get_file_size(input);
     }
     else if (input_type == SHA3_input_type::enum_string)   {
         m_input_string = make_shared<string>(input);
@@ -22,47 +22,59 @@ bool SHA3_message_parser::get_block(unsigned int *output)   {
     }
     const int output_length_bytes = m_output_length_bits/8;
 
-    if (m_input_string) {
 
-        // blocks that do not contain any padding, we just need to copy the data
-        if (m_current_block_index < m_number_of_blocks_wo_padding_bits) {
+    // blocks that do not contain any padding, we just need to copy the data
+    if (m_current_block_index < m_number_of_blocks_wo_padding_bits) {
+        if (m_input_string) {
             memcpy(output, &((*m_input_string)[output_length_bytes*m_current_block_index]), output_length_bytes);
         }
-        // the last block of the original data can be either only data, or data+padding
-        else if (m_current_block_index == m_number_of_blocks_wo_padding_bits)    {
-            const short int number_of_original_bytes = (m_unpadded_input_length_bits % m_output_length_bits)/8;
-
-            // copy the remaining bytes of the original data
-            memcpy(output, &((*m_input_string)[output_length_bytes*m_current_block_index]), number_of_original_bytes);
-
-            // the block contain both data and padding
-            if (number_of_original_bytes != output_length_bytes) {
-                unsigned char *output_bytes = reinterpret_cast<unsigned char *>(output);
-
-                // if padding is one byte only
-                if (m_padding_length == 8)  {
-                    output_bytes[output_length_bytes-1] = 0b10000110;
-                }
-                else {
-                    output_bytes[number_of_original_bytes] = 0b00000110;
-                    for (int i_byte = number_of_original_bytes+1; i_byte < output_length_bytes-1; i_byte++)   {
-                        output_bytes[i_byte] = 0;
-                    }
-                    output_bytes[output_length_bytes-1] = 0b10000000;
-                }
-            }
-        }
-        // in this case the last block contains only the padding
-        else if (m_current_block_index == m_number_of_blocks_wo_padding_bits+1)    {
-            unsigned char *output_bytes = reinterpret_cast<unsigned char *>(output);
-
-            output_bytes[0] = 0b00000110;
-            for (int i_byte = 1; i_byte < output_length_bytes-1; i_byte++)   {
-                output_bytes[i_byte] = 0;
-            }
-            output_bytes[output_length_bytes-1] = 0b10000000;
+        if (m_input_file)   {
+            m_input_file->read(m_input_buffer, output_length_bytes);
+            memcpy(output, m_input_buffer, output_length_bytes);
         }
     }
+    // the last block of the original data can be either only data, or data+padding
+    else if (m_current_block_index == m_number_of_blocks_wo_padding_bits)    {
+        const short int number_of_original_bytes = (m_unpadded_input_length_bits % m_output_length_bits)/8;
+
+        // copy the remaining bytes of the original data
+        if (m_input_string) {
+            memcpy(output, &((*m_input_string)[output_length_bytes*m_current_block_index]), number_of_original_bytes);
+        }
+        if (m_input_file)   {
+            m_input_file->read(m_input_buffer, number_of_original_bytes);
+            memcpy(output, m_input_buffer, number_of_original_bytes);
+        }
+
+
+        // the block contain both data and padding
+        if (number_of_original_bytes != output_length_bytes) {
+            unsigned char *output_bytes = reinterpret_cast<unsigned char *>(output);
+
+            // if padding is one byte only
+            if (m_padding_length == 8)  {
+                output_bytes[output_length_bytes-1] = 0b10000110;
+            }
+            else {
+                output_bytes[number_of_original_bytes] = 0b00000110;
+                for (int i_byte = number_of_original_bytes+1; i_byte < output_length_bytes-1; i_byte++)   {
+                    output_bytes[i_byte] = 0;
+                }
+                output_bytes[output_length_bytes-1] = 0b10000000;
+            }
+        }
+    }
+    // in this case the last block contains only the padding
+    else if (m_current_block_index == m_number_of_blocks_wo_padding_bits+1)    {
+        unsigned char *output_bytes = reinterpret_cast<unsigned char *>(output);
+
+        output_bytes[0] = 0b00000110;
+        for (int i_byte = 1; i_byte < output_length_bytes-1; i_byte++)   {
+            output_bytes[i_byte] = 0;
+        }
+        output_bytes[output_length_bytes-1] = 0b10000000;
+    }
+
 
     m_current_block_index++;
     return true;

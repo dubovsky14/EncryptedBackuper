@@ -10,16 +10,20 @@ using namespace EncryptedBackuperTests;
 int main(int argc, const char **argv)   {
 
     try {
-        if (argc != 2)  {
+        if (argc < 2)  {
             throw std::string("Invalid input! One input argument is required: Type of the test");
         }
         const string test_type = argv[1];
 
-        if      (test_type == "RSA-512")  RSA_test(512);
-        else if (test_type == "SHA3-224") SHA3_test(224);
-        else if (test_type == "SHA3-256") SHA3_test(256);
-        else if (test_type == "SHA3-384") SHA3_test(384);
-        else if (test_type == "SHA3-512") SHA3_test(512);
+        if      (test_type == "RSA-512")        RSA_test(512);
+        else if (test_type == "SHA3-224")       SHA3_test_sample_strings(224);
+        else if (test_type == "SHA3-256")       SHA3_test_sample_strings(256);
+        else if (test_type == "SHA3-384")       SHA3_test_sample_strings(384);
+        else if (test_type == "SHA3-512")       SHA3_test_sample_strings(512);
+        else if (test_type == "SHA3-224-file")  SHA3_test_file(224, argc, argv);
+        else if (test_type == "SHA3-256-file")  SHA3_test_file(256, argc, argv);
+        else if (test_type == "SHA3-384-file")  SHA3_test_file(384, argc, argv);
+        else if (test_type == "SHA3-512-file")  SHA3_test_file(512, argc, argv);
         else   {
             throw string("Unkown test: \"" + test_type + "\'");
         }
