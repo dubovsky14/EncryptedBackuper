@@ -33,5 +33,7 @@ namespace EncryptedBackuper     {
             boost::multiprecision::cpp_int  generate_rsa_bit_length_size_password_hash(const std::string &password, unsigned int rsa_key_length);
 
             static std::vector<std::string> read_lines_of_text_file(const std::string &input_file, unsigned max_number_of_lines = 0);
+
+            static bool valid_rsa_type(unsigned int rsa_key_length);
     };
 }

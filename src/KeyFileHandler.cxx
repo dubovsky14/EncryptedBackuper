@@ -15,6 +15,10 @@ using namespace boost::multiprecision;
 
 
 void KeyFileHandler::generate_keys(unsigned int rsa_key_length) {
+    if (!valid_rsa_type(rsa_key_length))    {
+        throw std::string("Invalid RSA key length! Only multiples of 512 are allowed!");
+    };
+
     m_rsa_type = rsa_key_length;
     bool valid_key = false;
     while (!valid_key) {
@@ -86,4 +90,9 @@ std::vector<std::string> KeyFileHandler::read_lines_of_text_file(const std::stri
         throw std::string("Unable to open file \"" + input_file + "\"");
     }
     return result;
+};
+
+bool KeyFileHandler::valid_rsa_type(unsigned int rsa_key_length)    {
+    if      (rsa_key_length == 0)     return false;
+    return   (rsa_key_length % 512) == 0;
 };
