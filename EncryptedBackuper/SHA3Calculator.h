@@ -95,4 +95,6 @@ namespace EncryptedBackuper {
     unsigned long long int get_bit_length(const boost::multiprecision::cpp_int &number);
 
     boost::multiprecision::cpp_int calculate_sha3(const std::string &message, unsigned int sha3_type);
+
+    boost::multiprecision::cpp_int calculate_sha3_from_file(const std::string &file, unsigned int sha3_type);
 }

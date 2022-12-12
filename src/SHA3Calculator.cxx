@@ -158,3 +158,9 @@ boost::multiprecision::cpp_int EncryptedBackuper::calculate_sha3(const string &m
     password_hasher.hash_message(message);
     return password_hasher.get_hash();
 };
+
+boost::multiprecision::cpp_int EncryptedBackuper::calculate_sha3_from_file(const std::string &file, unsigned int sha3_type) {
+    SHA3Calculator password_hasher(sha3_type);
+    password_hasher.hash_file(file);
+    return password_hasher.get_hash();
+};

@@ -1,63 +1,29 @@
-#include "../EncryptedBackuper/RSA_related_math_functions.h"
-#include "../EncryptedBackuper/RandomNumberGenerator.h"
-#include <boost/multiprecision/cpp_int.hpp>
+#include "../EncryptedBackuper/FileListHandler.h"
 
 #include <iostream>
+#include <vector>
+#include <string>
 
 using namespace std;
 using namespace EncryptedBackuper;
-using namespace boost::multiprecision;
 
 int main(int argc, const char **argv)   {
 
-
-    boost::multiprecision::cpp_int pq, private_key, public_key(65537);
-
-    bool valid_key = false;
-    while (!valid_key) {
-        valid_key = generate_rsa_keys(&pq, &private_key, public_key, 512);
-    }
-    cout << "pq = " << pq << endl;
-    cout << "key_private = " << private_key << endl;
-    cout << "key_public = " << public_key << endl;
-
-    while (true)    {
-        boost::multiprecision::cpp_int message;
-        cout << "Set the message\n";
-        cin >> message;
-        cout << endl;
-
-        const boost::multiprecision::cpp_int signature = square_and_multiply(message, private_key, pq);
-        cout << "signature = " << signature << endl;
-
-        const boost::multiprecision::cpp_int signature_decr = square_and_multiply(signature, public_key, pq);
-        cout << "signature^pub_key mod pq = " << signature_decr << endl;
+    if (argc != 3)  {
+        cout << "2 input arguments are expected:";
     }
 
-    return 0;
-/*
-    RandomNumberGenerator rng(2048);
-    for (unsigned int i = 0; i < 10; i++)   {
-        cout << generate_random_prime(&rng, 25) << endl;
+    const std::string filelist_address = argv[1];
+
+    FileListHandler filelist_handler;
+    filelist_handler.load_filelist_from_file(filelist_address);
+    filelist_handler.evaluate_file_sizes_from_disk();
+    vector<string>          file_names = filelist_handler.get_list_of_files_names_only();
+    vector<long long int>   file_sizes = filelist_handler.get_files_sizes();
+
+    for (unsigned int i = 0; i < file_names.size(); i++)  {
+        cout << file_names[i] << "\t\t" << file_sizes[i] << endl;
     }
-    return 0;
 
-    cpp_int p(991), q(691);
-    cpp_int pq = q*p;;
-
-    cpp_int phi = (p-1)*(q-1);
-    cpp_int pub_key = 17;
-
-    bool valid_key = true;
-    cpp_int private_key = calculate_private_key(phi, pub_key, &valid_key);
-    cout << "Private key = " << private_key << endl;
-
-    cpp_int message = 31;
-    cpp_int signature = square_and_multiply(message, private_key, pq);
-
-    cout << "message = " << message << "\t\tsignature = " << signature << endl;
-    cout << "signature^pub mod pq = " << square_and_multiply(signature, pub_key, pq) << endl;
-
-    return 0;
-*/
+    filelist_handler.create_files_hashes_file(argv[2]);
 }
