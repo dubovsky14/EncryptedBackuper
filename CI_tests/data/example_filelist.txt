@@ -1,0 +1,3 @@
+CI_tests/data/example_filelist.txt
+CI_tests/data/sample_binary_file.jpg
+non_existing_file.txt
