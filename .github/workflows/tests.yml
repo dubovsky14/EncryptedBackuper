@@ -121,3 +121,19 @@ jobs:
               ./tests SHA3-256-file CI_tests/data/sample_binary_file.jpg 0xfe17ce2254961f83860b457a1687e9f524f2f2d873415fa054684928376358f1
               ./tests SHA3-384-file CI_tests/data/sample_binary_file.jpg 0x1b1d5f3d9fdd7c2221f709ad977687220b6eabdc0d1aed3b26b1e35d6dd329b512d74c1e3e6f21d2d8dd4cfac0539fa4
               ./tests SHA3-512-file CI_tests/data/sample_binary_file.jpg 0xc3aa73efdf9079c9fa1c2b304894946b2ba0500940c526a95dc303e84f223e4f7e9fbe2d2e923ffd2254872af31983fdeaf7c0e956097dabd2044a09d94b632c
+
+  KeyFileHandler:
+    runs-on: ubuntu-latest
+    needs: [build-linux]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - uses: actions/download-artifact@v3
+        name: Download linux build
+        with:
+          name: artifact-linux-build
+      - run:  |
+              chmod u+x tests
+              ./tests KeyFileHandler

@@ -1,5 +1,7 @@
 #include "../../CI_tests/headers/RSA_test.h"
 #include "../../CI_tests/headers/SHA3_test.h"
+#include "../../CI_tests/headers/KeyFileHandler_test.h"
+
 
 #include <iostream>
 #include <string>
@@ -24,6 +26,7 @@ int main(int argc, const char **argv)   {
         else if (test_type == "SHA3-256-file")  SHA3_test_file(256, argc, argv);
         else if (test_type == "SHA3-384-file")  SHA3_test_file(384, argc, argv);
         else if (test_type == "SHA3-512-file")  SHA3_test_file(512, argc, argv);
+        else if (test_type == "KeyFileHandler") KeyFileHandler_test(512);
         else   {
             throw string("Unkown test: \"" + test_type + "\'");
         }
