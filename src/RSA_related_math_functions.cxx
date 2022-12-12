@@ -81,12 +81,22 @@ vector<unsigned char> EncryptedBackuper::get_representation_in_base_n(const cpp_
     return result;
 };
 
-std::string EncryptedBackuper::convert_cpp_int_to_string(const boost::multiprecision::cpp_int &number) {
+std::string EncryptedBackuper::convert_cpp_int_to_hex_string(const boost::multiprecision::cpp_int &number) {
     const string hex_chars("0123456789abcdef");
     string result = "";
     vector<unsigned char> hex_representation = get_representation_in_base_n(number, 16);
     for (unsigned char x : hex_representation)  {
         result = result+hex_chars[x];
+    }
+    return result;
+};
+
+std::string EncryptedBackuper::convert_cpp_int_to_bin_string(const boost::multiprecision::cpp_int &number) {
+    const string bin_chars("01");
+    string result = "";
+    vector<unsigned char> bin_representation = get_representation_in_base_n(number, 2);
+    for (unsigned char x : bin_representation)  {
+        result = result+bin_chars[x];
     }
     return result;
 };

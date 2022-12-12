@@ -33,20 +33,20 @@ void KeyFileHandler::load_keys_from_file(const std::string &key_file, const std:
 
     m_pq            = cpp_int(lines_of_key_file[1]);
     m_public_key    = cpp_int(lines_of_key_file[2]);
-    m_private_key   = cpp_int(lines_of_key_file[3]) - password_extended_hash;
+    m_private_key   = cpp_int(lines_of_key_file[3]) ^ password_extended_hash;
 
 };
 
 void KeyFileHandler::save_keys_to_file(const std::string &key_file, const std::string &password)    {
     cpp_int password_extended_hash = generate_rsa_bit_length_size_password_hash(password, m_rsa_type);
-    cpp_int password_hash_plus_private_key = m_private_key + password_extended_hash;
+    cpp_int password_hash_plus_private_key = m_private_key ^ password_extended_hash;
 
     ofstream outfile;
     outfile.open(key_file);
     outfile << m_rsa_type << endl;
-    outfile << "0x" + convert_cpp_int_to_string(m_pq) << endl;
-    outfile << "0x" + convert_cpp_int_to_string(m_public_key) << endl;
-    outfile << "0x" + convert_cpp_int_to_string(password_hash_plus_private_key) << endl;
+    outfile << "0x" + convert_cpp_int_to_hex_string(m_pq) << endl;
+    outfile << "0x" + convert_cpp_int_to_hex_string(m_public_key) << endl;
+    outfile << "0x" + convert_cpp_int_to_hex_string(password_hash_plus_private_key) << endl;
     outfile.close();
 
 };

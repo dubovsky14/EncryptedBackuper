@@ -48,5 +48,8 @@ namespace EncryptedBackuper     {
     std::vector<unsigned char> get_representation_in_base_n(const boost::multiprecision::cpp_int &number, unsigned char base);
 
     /* Get hexadecimal string from cpp_int */
-    std::string convert_cpp_int_to_string(const boost::multiprecision::cpp_int &number);
+    std::string convert_cpp_int_to_hex_string(const boost::multiprecision::cpp_int &number);
+
+    /* Get binary string from cpp_int */
+    std::string convert_cpp_int_to_bin_string(const boost::multiprecision::cpp_int &number);
 }
