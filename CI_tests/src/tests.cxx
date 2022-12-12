@@ -18,6 +18,8 @@ int main(int argc, const char **argv)   {
         const string test_type = argv[1];
 
         if      (test_type == "RSA-512")        RSA_test(512);
+        else if (test_type == "RSA-1024")       RSA_test(1024);
+        else if (test_type == "RSA-2048")       RSA_test(2048);
         else if (test_type == "SHA3-224")       SHA3_test_sample_strings(224);
         else if (test_type == "SHA3-256")       SHA3_test_sample_strings(256);
         else if (test_type == "SHA3-384")       SHA3_test_sample_strings(384);

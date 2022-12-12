@@ -30,7 +30,7 @@ void EncryptedBackuperTests::RSA_test(unsigned int key_length)   {
     cout << "key_private = " << private_key << endl;
     cout << "key_public = " << public_key << endl << endl;
 
-    RandomNumberGenerator rng(key_length);
+    RandomNumberGenerator rng(key_length/2);
     for (unsigned int i = 0; i < 10; i++)    {
         boost::multiprecision::cpp_int message = rng.Random();
         cout << "Message = " << message << endl;

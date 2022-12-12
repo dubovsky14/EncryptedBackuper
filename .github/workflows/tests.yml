@@ -21,7 +21,7 @@ jobs:
           path: bin/tests
           retention-days: 1
 
-  rsa-512-validation:
+  rsa-1024-validation:
     runs-on: ubuntu-latest
     needs: [build-linux]
     steps:
@@ -35,7 +35,23 @@ jobs:
           name: artifact-linux-build
       - run:  |
               chmod u+x tests
-              ./tests RSA-512
+              ./tests RSA-1024
+
+  rsa-2048-validation:
+    runs-on: ubuntu-latest
+    needs: [build-linux]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - uses: actions/download-artifact@v3
+        name: Download linux build
+        with:
+          name: artifact-linux-build
+      - run:  |
+              chmod u+x tests
+              ./tests RSA-2048
 
   SHA3-512-validation-string:
     runs-on: ubuntu-latest
