@@ -4,6 +4,7 @@
 
 #include "../../EncryptedBackuper/RSA_related_math_functions.h"
 #include "../../EncryptedBackuper/SHA3Calculator.h"
+#include "../../EncryptedBackuper/StringOperations.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 
@@ -43,5 +44,23 @@ void EncryptedBackuperTests::CreateHashListFile_test(int argc, const char **argv
 
     if (hash_calculated != hash_correct)  {
         throw string("Hashes do not match!");
+    }
+};
+
+void EncryptedBackuperTests::FileListHandler_up_to_date_files_test(int argc, const char **argv)    {
+    if (argc != 5)  {
+        throw std::string("Three input arguments are required! Filelist address, output hash file and boolean if the files are up-to-date");
+    }
+
+    const std::string &filelist_address      = argv[2];
+    const std::string &output_hash_file      = argv[3];
+    const bool up_to_date_files_input        = ConvertStringTo<bool>(argv[4]);
+
+    FileListHandler filelist_handler;
+    filelist_handler.load_filelist_from_file(filelist_address);
+    const bool up_to_date_files_now = filelist_handler.files_are_up_to_date(output_hash_file);
+
+    if (up_to_date_files_now != up_to_date_files_input)  {
+        throw string("FileListHandler_up_to_date_files_test failed! Boolean values do not match!");
     }
 };

@@ -30,6 +30,7 @@ int main(int argc, const char **argv)   {
         else if (test_type == "SHA3-384-file")              SHA3_test_file(384, argc, argv);
         else if (test_type == "SHA3-512-file")              SHA3_test_file(512, argc, argv);
         else if (test_type == "FileListHandler-hash-file")  CreateHashListFile_test(argc, argv);
+        else if (test_type == "FileListHandler-up-to-date") FileListHandler_up_to_date_files_test(argc, argv);
         else if (test_type == "KeyFileHandler")             KeyFileHandler_test(512);
         else   {
             throw string("Unkown test: \"" + test_type + "\'");

@@ -169,3 +169,6 @@ jobs:
       - run:  |
               chmod u+x tests
               ./tests FileListHandler-hash-file CI_tests/data/example_filelist.txt temp_hash_file.txt 0x33c90af68c410aa916e09188d0a495d897cc9d12420282242d3aeb372244b4e4
+              ./tests FileListHandler-up-to-date CI_tests/data/example_filelist.txt temp_hash_file.txt true
+              echo "1234" > CI_tests/data/example_filelist.txt
+              ./tests FileListHandler-up-to-date CI_tests/data/example_filelist.txt temp_hash_file.txt false

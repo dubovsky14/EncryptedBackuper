@@ -66,8 +66,28 @@ void    FileListHandler::create_files_hashes_file(const std::string &file_hashes
 
 };
 
-void    FileListHandler::files_are_up_to_date(const std::string &reference_hashes_file) const   {
+bool    FileListHandler::files_are_up_to_date(const std::string &reference_hashes_file) const   {
+    vector<string> reference_hashes = get_hashes_from_reference_hash_file(reference_hashes_file);
+    vector<string> current_hashes;
+    for (unsigned int i_file = 0; i_file < m_filelist_full_paths.size(); i_file++)  {
+        if (m_files_sizes[i_file] < 0)  {
+            current_hashes.push_back("0x0");
+            continue;
+        }
+        current_hashes.push_back("0x" + convert_cpp_int_to_hex_string(calculate_sha3_from_file(m_filelist_full_paths[i_file], 256)));
+    }
 
+    if (reference_hashes.size() != current_hashes.size()) {
+        return false;
+    }
+    for (unsigned int i_file = 0; i_file < current_hashes.size(); i_file++)  {
+        if (current_hashes[i_file] != reference_hashes[i_file])  {
+            return false;
+        }
+
+    }
+
+    return true;
 };
 
 void    FileListHandler::load_filelist_from_string(const std::string &filelist_string)  {
@@ -91,10 +111,24 @@ long long int FileListHandler::get_file_size(const std::string &file_address) {
     return (end-begin);
 };
 
+std::vector<std::string>    FileListHandler::get_hashes_from_reference_hash_file(const std::string &reference_hashes_file)   {
+    vector<string> result;
+    string line;
+    ifstream input_file (reference_hashes_file);
+    if (input_file.is_open())    {
+        while ( getline (input_file,line) )        {
+            StripString(&line);
+            if (line.length() == 0)    {
+                continue;
+            }
+            result.push_back(line);
+        }
+        input_file.close();
+    }
+    else    {
+        throw std::string("Unable to open file \"" + reference_hashes_file + "\"");
+    }
+    return result;
+};
 
-
-
-std::vector<std::string>       m_filelist_full_paths;
-std::vector<std::string>       m_filelist_filenames_only;
-std::vector<long long int>     m_files_sizes;
 

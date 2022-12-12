@@ -14,7 +14,7 @@ namespace EncryptedBackuper     {
 
             void    create_files_hashes_file(const std::string &file_hashes_output_file)   const;
 
-            void    files_are_up_to_date(const std::string &reference_hashes_file) const;
+            bool    files_are_up_to_date(const std::string &reference_hashes_file) const;
 
             void    load_filelist_from_string(const std::string &filelist_string);
 
@@ -31,6 +31,8 @@ namespace EncryptedBackuper     {
             std::vector<long long int>      m_files_sizes;
 
             static long long int get_file_size(const std::string &file_address);
+
+            static std::vector<std::string>    get_hashes_from_reference_hash_file(const std::string &reference_hashes_file);
 
 
     };
