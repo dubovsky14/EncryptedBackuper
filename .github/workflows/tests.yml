@@ -8,6 +8,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
+          submodules: recursive
       - run:  |
               sudo apt-get install libboost-all-dev
               mkdir bin AES/bin

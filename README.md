@@ -4,12 +4,22 @@ Boost library is necessary to compile the code. In order to install it on Linux:
 sudo apt-get install libboost-all-dev
 ```
 
-In order to compile the code (when the boost is already installed):
+The package also depends on AES package, which is added as a submodule.
+
+In order to checkout and compile the code (when the boost is already installed):
 
 ```
-mkdir bin
+git clone --recursive  git@github.com:dubovsky14/EncryptedBackuper.git
 
-cd bin
+mkdir bin AES/bin
+
+cd AES/bin
+
+cmake ../.
+
+make
+
+cd ../../bin
 
 cmake ../.
 
