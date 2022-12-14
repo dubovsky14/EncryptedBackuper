@@ -2,6 +2,7 @@
 #include "../../CI_tests/headers/SHA3_test.h"
 #include "../../CI_tests/headers/KeyFileHandler_test.h"
 #include "../../CI_tests/headers/FileListHandler_test.h"
+#include "../../CI_tests/headers/KeyEncryptionTool_test.h"
 
 
 #include <iostream>
@@ -32,6 +33,7 @@ int main(int argc, const char **argv)   {
         else if (test_type == "FileListHandler-hash-file")  CreateHashListFile_test(argc, argv);
         else if (test_type == "FileListHandler-up-to-date") FileListHandler_up_to_date_files_test(argc, argv);
         else if (test_type == "KeyFileHandler")             KeyFileHandler_test(512);
+        else if (test_type == "KeyEncryptionTool")          KeyEncryptionTool_test(1024);
         else   {
             throw string("Unkown test: \"" + test_type + "\'");
         }
