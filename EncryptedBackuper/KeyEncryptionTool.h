@@ -14,11 +14,11 @@ namespace EncryptedBackuper     {
 
             boost::multiprecision::cpp_int generate_aes_key(const std::string &file_hashes_summary) const;
 
-            boost::multiprecision::cpp_int encrypt_aes_key(const boost::multiprecision::cpp_int &aes_key);
+            boost::multiprecision::cpp_int encrypt_aes_key(const boost::multiprecision::cpp_int &aes_key) const;
 
-            boost::multiprecision::cpp_int decrypt_aes_key(const std::string &password);
+            boost::multiprecision::cpp_int decrypt_aes_key(const boost::multiprecision::cpp_int &aes_key_encrypted, const std::string &password) const;
 
-            std::string get_key_summary_string()    const;
+            std::string produce_key_summary_string(const boost::multiprecision::cpp_int &aes_key)    const;
 
             void load_key_summary_string(const std::string key_summary_string, const std::string &password)  const;
 
@@ -37,6 +37,7 @@ namespace EncryptedBackuper     {
             boost::multiprecision::cpp_int  m_pq;
             boost::multiprecision::cpp_int  m_public_key;
             boost::multiprecision::cpp_int  m_private_key_xor_password_hash;
+            boost::multiprecision::cpp_int  m_private_key = -1;
             unsigned int                    m_rsa_key_size;
 
             boost::multiprecision::cpp_int  m_aes_key = -1;

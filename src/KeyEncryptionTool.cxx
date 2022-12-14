@@ -14,10 +14,10 @@ using namespace std;
 using namespace EncryptedBackuper;
 using namespace boost::multiprecision;
 
-void KeyEncryptionTool::set_rsa_keys(  const boost::multiprecision::cpp_int &pq,
-                    const boost::multiprecision::cpp_int &public_key,
-                    const boost::multiprecision::cpp_int &private_key_xor_password_hash,
-                    unsigned int rsa_key_size)  {
+void KeyEncryptionTool::set_rsa_keys(   const boost::multiprecision::cpp_int &pq,
+                                        const boost::multiprecision::cpp_int &public_key,
+                                        const boost::multiprecision::cpp_int &private_key_xor_password_hash,
+                                        unsigned int rsa_key_size)  {
     m_pq                            = pq;
     m_public_key                    = public_key;
     m_private_key_xor_password_hash = private_key_xor_password_hash;
@@ -32,19 +32,32 @@ boost::multiprecision::cpp_int KeyEncryptionTool::generate_aes_key(const std::st
     return calculate_sha3(random_number + file_hashes_summary, 256);
 };
 
-boost::multiprecision::cpp_int KeyEncryptionTool::encrypt_aes_key(const boost::multiprecision::cpp_int &aes_key)    {
+boost::multiprecision::cpp_int KeyEncryptionTool::encrypt_aes_key(const boost::multiprecision::cpp_int &aes_key)    const   {
     if (aes_key > m_pq) {
-        throw std::string("KeyEncryptionTool::encrypt_aes_key: Unable to exncrypt. The provided AES key is larger than P*Q expresion in RSA key");
+        throw std::string("KeyEncryptionTool::encrypt_aes_key: Unable to encrypt. The provided AES key is larger than P*Q expresion in RSA key");
     }
     return square_and_multiply(aes_key, m_public_key, m_pq);
 };
 
-boost::multiprecision::cpp_int KeyEncryptionTool::decrypt_aes_key(const std::string &password)  {
-
+boost::multiprecision::cpp_int KeyEncryptionTool::decrypt_aes_key(  const boost::multiprecision::cpp_int &aes_key_encrypted,
+                                                                    const std::string &password)    const   {
+    if (aes_key_encrypted > m_pq) {
+        throw std::string("KeyEncryptionTool::dencrypt_aes_key: Unable to decrypt. The provided encrypted AES key is larger than P*Q expresion in RSA key");
+    }
+    cpp_int rsa_private_key = decrypt_private_key(m_private_key_xor_password_hash, password, m_rsa_key_size);
+    return square_and_multiply(aes_key_encrypted, rsa_private_key, m_pq);
 };
 
-std::string KeyEncryptionTool::get_key_summary_string()    const    {
+std::string KeyEncryptionTool::produce_key_summary_string(const boost::multiprecision::cpp_int &aes_key)    const    {
+    //rsa_length=value;rsa_pq=value;rsa_public_key=value;rsa_private_key_XOR_keccak(password)=value;aes_key_encrypted=value
+    string result = "rsa_length=" + std::to_string(m_rsa_key_size);
+    result = result + ";" + "rsa_pq=0x" + convert_cpp_int_to_hex_string(m_pq);
+    result = result + ";" + "rsa_public_key=0x" + convert_cpp_int_to_hex_string(m_public_key);
+    result = result + ";" + "rsa_private_key_XOR_keccak(password)=0x" + convert_cpp_int_to_hex_string(m_private_key_xor_password_hash);
+    const cpp_int aes_key_encrypted = encrypt_aes_key(aes_key);
+    result = result + ";" + "aes_key_encrypted=0x" + convert_cpp_int_to_hex_string(aes_key_encrypted);
 
+    return result;
 };
 
 void KeyEncryptionTool::load_key_summary_string(const std::string key_summary_string, const std::string &password)  const   {
