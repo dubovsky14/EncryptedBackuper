@@ -137,6 +137,16 @@ long long int FileListHandler::get_file_size(const std::string &file_address) {
     return (end-begin);
 };
 
+std::string FileListHandler::get_file_hash_summary() const  {
+    string result;
+    for (unsigned int i_file = 0; i_file < m_filelist_full_paths.size(); i_file++)  {
+        if (m_files_sizes[i_file] > 0)  {
+            result = result + ("0x" + convert_cpp_int_to_hex_string(calculate_sha3_from_file(m_filelist_full_paths[i_file], 256)));
+        }
+    }
+    return result;
+};
+
 std::vector<std::string>    FileListHandler::get_hashes_from_reference_hash_file(const std::string &reference_hashes_file)   {
     vector<string> result;
     string line;

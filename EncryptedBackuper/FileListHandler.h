@@ -25,6 +25,9 @@ namespace EncryptedBackuper     {
 
             std::vector<long long int>  get_files_sizes() const                 {return m_files_sizes;};
 
+            /* String with hashes of all input files - it will be hashed and after adding a random number to it, it will be used as AES key */
+            std::string                 get_file_hash_summary() const;
+
         private:
             std::vector<std::string>        m_filelist_full_paths;
             std::vector<std::string>        m_filelist_filenames_only;

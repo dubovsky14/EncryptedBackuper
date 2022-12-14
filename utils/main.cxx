@@ -26,6 +26,7 @@ int main(int argc, const char **argv)   {
 
     cout << filelist_handler.dump_filelist_to_string() << endl;
     filelist_handler.create_files_hashes_file(argv[2]);
+    cout << "hash summary: " << filelist_handler.get_file_hash_summary() << endl;
 
 /*
 
