@@ -2,6 +2,7 @@
 
 #include "../EncryptedBackuper/RSA_related_math_functions.h"
 #include "../EncryptedBackuper/SHA3Calculator.h"
+#include "../EncryptedBackuper/KeyEncryptionTool.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 
@@ -33,17 +34,14 @@ void KeyFileHandler::load_keys_from_file(const std::string &key_file, const std:
     }
     m_rsa_type      = std::stoi(lines_of_key_file[0]);
 
-    cpp_int password_extended_hash = generate_rsa_bit_length_size_password_hash(password, m_rsa_type);
-
     m_pq            = cpp_int(lines_of_key_file[1]);
     m_public_key    = cpp_int(lines_of_key_file[2]);
-    m_private_key   = cpp_int(lines_of_key_file[3]) ^ password_extended_hash;
+    m_private_key   = KeyEncryptionTool::decrypt_private_key(cpp_int(lines_of_key_file[3]), password, m_rsa_type);
 
 };
 
 void KeyFileHandler::save_keys_to_file(const std::string &key_file, const std::string &password)    {
-    cpp_int password_extended_hash = generate_rsa_bit_length_size_password_hash(password, m_rsa_type);
-    cpp_int password_hash_plus_private_key = m_private_key ^ password_extended_hash;
+    cpp_int password_hash_plus_private_key   = KeyEncryptionTool::encrypt_private_key(m_private_key, password, m_rsa_type);
 
     ofstream outfile;
     outfile.open(key_file);
@@ -53,23 +51,6 @@ void KeyFileHandler::save_keys_to_file(const std::string &key_file, const std::s
     outfile << "0x" + convert_cpp_int_to_hex_string(password_hash_plus_private_key) << endl;
     outfile.close();
 
-};
-
-
-boost::multiprecision::cpp_int  KeyFileHandler::generate_rsa_bit_length_size_password_hash( const std::string &password,
-                                                                                            unsigned int rsa_key_length)    {
-
-    const unsigned int sha3_type = 512;
-    SHA3Calculator password_hasher(sha3_type);
-    password_hasher.hash_message(password);
-    cpp_int password_extended_hash = password_hasher.get_hash();
-    const unsigned int required_number_of_hashes = rsa_key_length/sha3_type;
-    const cpp_int bitshift_constant = square_and_multiply(cpp_int(2), sha3_type, 0);
-    for (unsigned int i = 1; i<required_number_of_hashes; i++)   {
-        password_extended_hash *= bitshift_constant;
-        password_extended_hash += password_hasher.apply_next_keccak_and_get_output();
-    }
-    return password_extended_hash;
 };
 
 

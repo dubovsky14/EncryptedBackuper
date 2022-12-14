@@ -29,9 +29,6 @@ namespace EncryptedBackuper     {
             boost::multiprecision::cpp_int  m_public_key    = 65537;
             boost::multiprecision::cpp_int  m_private_key   = 0;
 
-            /* Calculate pseudo-random number using SHA3-512 with the bith length equal to rsa_key_length */
-            boost::multiprecision::cpp_int  generate_rsa_bit_length_size_password_hash(const std::string &password, unsigned int rsa_key_length);
-
             static std::vector<std::string> read_lines_of_text_file(const std::string &input_file, unsigned max_number_of_lines = 0);
 
             static bool valid_rsa_type(unsigned int rsa_key_length);
