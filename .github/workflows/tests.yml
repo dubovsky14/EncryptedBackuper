@@ -10,8 +10,11 @@ jobs:
           node-version: '14'
       - run:  |
               sudo apt-get install libboost-all-dev
-              mkdir bin
-              cd bin
+              mkdir bin AES/bin
+              cd AES/bin
+              cmake ../.
+              make
+              cd ../../bin
               cmake ../.
               make
         name: upload_artifact
