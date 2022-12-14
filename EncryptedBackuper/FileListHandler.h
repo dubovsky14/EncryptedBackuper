@@ -30,6 +30,9 @@ namespace EncryptedBackuper     {
             std::vector<std::string>        m_filelist_filenames_only;
             std::vector<long long int>      m_files_sizes;
 
+            static const std::string    s_file_name_vs_size_separator;
+            static const std::string    s_between_files_separator;
+
             static long long int get_file_size(const std::string &file_address);
 
             static std::vector<std::string>    get_hashes_from_reference_hash_file(const std::string &reference_hashes_file);

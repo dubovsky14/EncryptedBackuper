@@ -8,7 +8,6 @@ using namespace std;
 using namespace EncryptedBackuper;
 
 int main(int argc, const char **argv)   {
-
     if (argc != 3)  {
         cout << "2 input arguments are expected:";
     }
@@ -25,5 +24,20 @@ int main(int argc, const char **argv)   {
         cout << file_names[i] << "\t\t" << file_sizes[i] << endl;
     }
 
+    cout << filelist_handler.dump_filelist_to_string() << endl;
     filelist_handler.create_files_hashes_file(argv[2]);
+
+/*
+
+    FileListHandler filelist_handler;
+    filelist_handler.load_filelist_from_string("main.cxx*919:SHA3Calculator.cxx*5380:non_existing_file.txt*-1");
+    vector<string>          file_names = filelist_handler.get_list_of_files_names_only();
+    vector<long long int>   file_sizes = filelist_handler.get_files_sizes();
+
+    for (unsigned int i = 0; i < file_names.size(); i++)  {
+        cout << file_names[i] << "\t\t" << file_sizes[i] << endl;
+    }
+
+    //cout << filelist_handler.dump_filelist_to_string() << endl;
+*/
 }

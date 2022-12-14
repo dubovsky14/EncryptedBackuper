@@ -11,6 +11,9 @@
 using namespace std;
 using namespace EncryptedBackuper;
 
+const std::string    FileListHandler::s_file_name_vs_size_separator   = "*";
+const std::string    FileListHandler::s_between_files_separator       = ":";
+
 FileListHandler::FileListHandler()  {
 
 };
@@ -84,18 +87,41 @@ bool    FileListHandler::files_are_up_to_date(const std::string &reference_hashe
         if (current_hashes[i_file] != reference_hashes[i_file])  {
             return false;
         }
-
     }
 
     return true;
 };
 
 void    FileListHandler::load_filelist_from_string(const std::string &filelist_string)  {
-
+    m_filelist_full_paths.clear();
+    m_filelist_filenames_only.clear();
+    m_files_sizes.clear();
+    vector<string> name_and_size_vector = SplitString(filelist_string, s_between_files_separator);
+    for (const std::string &name_and_size_string : name_and_size_vector)    {
+        vector<string> name_and_size = SplitString(name_and_size_string, s_file_name_vs_size_separator);
+        if (name_and_size.size() != 2)  {
+            throw std::string("FileListHandler::load_filelist_from_string : invalid input string");
+        }
+        if (!StringIsInt(name_and_size[1])) {
+            throw std::string("FileListHandler::load_filelist_from_string : invalid input string");
+        }
+        m_filelist_filenames_only.push_back(name_and_size[0]);
+        m_files_sizes.push_back(std::stoi(name_and_size[1]));
+    }
 };
 
 std::string FileListHandler::dump_filelist_to_string()   const  {
-
+    //"file1_name:file1_size_in_bytes*file2_name:file2_size_in_bytes ..."
+    string result;
+    if (m_files_sizes.size() != m_filelist_filenames_only.size())   {
+        throw std::string("FileListHandler::create_files_hashes_file: vector of files and vector of file sizes are inconsistent!");
+    }
+    for (unsigned int i_file = 0; i_file < m_filelist_filenames_only.size(); i_file++)  {
+        result =    result + (i_file == 0 ? "" : s_between_files_separator) +
+                    m_filelist_filenames_only[i_file] + s_file_name_vs_size_separator +
+                    std::to_string(m_files_sizes[i_file]);
+    }
+    return result;
 };
 
 long long int FileListHandler::get_file_size(const std::string &file_address) {
