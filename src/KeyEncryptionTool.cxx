@@ -85,8 +85,10 @@ void KeyEncryptionTool::load_key_summary_string(const std::string key_summary_st
         m_pq = read_hex_value(1);
         m_public_key = read_hex_value(2);
         m_private_key_xor_password_hash = read_hex_value(3);
+        m_aes_key_encrypted = read_hex_value(4);
         if (password.length() > 0)  {
-            m_aes_key = decrypt_aes_key(read_hex_value(4), password);
+            m_private_key = decrypt_private_key(m_private_key_xor_password_hash, password, m_rsa_key_size);
+            m_aes_key = decrypt_aes_key(m_aes_key_encrypted, password);
         }
     }
     catch(boost::wrapexcept<std::runtime_error> &invalid_key_input) {
