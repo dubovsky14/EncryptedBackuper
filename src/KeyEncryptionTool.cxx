@@ -3,6 +3,7 @@
 #include "../EncryptedBackuper/SHA3Calculator.h"
 #include "../EncryptedBackuper/RandomNumberGenerator.h"
 #include "../EncryptedBackuper/RSA_related_math_functions.h"
+#include "../EncryptedBackuper/StringOperations.h"
 
 
 #include <boost/multiprecision/cpp_int.hpp>
@@ -50,18 +51,53 @@ boost::multiprecision::cpp_int KeyEncryptionTool::decrypt_aes_key(  const boost:
 
 std::string KeyEncryptionTool::produce_key_summary_string(const boost::multiprecision::cpp_int &aes_key)    const    {
     //rsa_length=value;rsa_pq=value;rsa_public_key=value;rsa_private_key_XOR_keccak(password)=value;aes_key_encrypted=value
+    const cpp_int aes_key_encrypted = encrypt_aes_key(aes_key);
+
     string result = "rsa_length=" + std::to_string(m_rsa_key_size);
     result = result + ";" + "rsa_pq=0x" + convert_cpp_int_to_hex_string(m_pq);
     result = result + ";" + "rsa_public_key=0x" + convert_cpp_int_to_hex_string(m_public_key);
     result = result + ";" + "rsa_private_key_XOR_keccak(password)=0x" + convert_cpp_int_to_hex_string(m_private_key_xor_password_hash);
-    const cpp_int aes_key_encrypted = encrypt_aes_key(aes_key);
     result = result + ";" + "aes_key_encrypted=0x" + convert_cpp_int_to_hex_string(aes_key_encrypted);
 
     return result;
 };
 
-void KeyEncryptionTool::load_key_summary_string(const std::string key_summary_string, const std::string &password)  const   {
+void KeyEncryptionTool::load_key_summary_string(const std::string key_summary_string, const std::string &password)   {
+    try {
+        const vector<string> vector_key_name_vs_key_value = SplitString(key_summary_string, ";");
+        if (vector_key_name_vs_key_value.size() < 5)    {
+            throw string("Unabe to load key summary string. One of the keys is missing.");
+        }
 
+        vector<string> rsa_key_and_size_vector = SplitString(vector_key_name_vs_key_value[0], "=");
+            if (rsa_key_and_size_vector.size() != 2) {
+                throw string("Unable to load summary string. Unknown input structure.");
+            }
+            m_rsa_key_size = std::stoi(rsa_key_and_size_vector[1]);
+
+        auto read_hex_value = [vector_key_name_vs_key_value](int index)   {
+            vector<string> name_and_value = SplitString(vector_key_name_vs_key_value[index], "=");
+            if (name_and_value.size() != 2) {
+                throw string("Unable to load summary string. Unknown input structure.");
+            }
+            return cpp_int(name_and_value[1]);
+        };
+        m_pq = read_hex_value(1);
+        m_public_key = read_hex_value(2);
+        m_private_key_xor_password_hash = read_hex_value(3);
+        if (password.length() > 0)  {
+            m_aes_key = decrypt_aes_key(read_hex_value(4), password);
+        }
+    }
+    catch(boost::wrapexcept<std::runtime_error> &invalid_key_input) {
+        throw string("Unable to load key summary string. One of the keys is not a number!");
+    }
+    catch (const std::invalid_argument & e) {
+        throw string("Unable to load key summary string. Invalid RSA length!");
+    }
+    catch (const std::out_of_range & e) {
+        throw string("Unable to load key summary string. Invalid RSA length!");
+    }
 };
 
 boost::multiprecision::cpp_int  KeyEncryptionTool::encrypt_private_key( const boost::multiprecision::cpp_int &private_key,

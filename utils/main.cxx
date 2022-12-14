@@ -4,10 +4,16 @@
 #include <vector>
 #include <string>
 
+#include <boost/multiprecision/cpp_int.hpp>
+
+
+using namespace boost::multiprecision;
+
 using namespace std;
 using namespace EncryptedBackuper;
 
 int main(int argc, const char **argv)   {
+    cpp_int a("asdv");
     if (argc != 3)  {
         cout << "2 input arguments are expected:";
     }

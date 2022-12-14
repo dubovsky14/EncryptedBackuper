@@ -20,7 +20,7 @@ namespace EncryptedBackuper     {
 
             std::string produce_key_summary_string(const boost::multiprecision::cpp_int &aes_key)    const;
 
-            void load_key_summary_string(const std::string key_summary_string, const std::string &password)  const;
+            void load_key_summary_string(const std::string key_summary_string, const std::string &password);
 
             /* XOR private key and the hash of the password */
             static boost::multiprecision::cpp_int  encrypt_private_key( const boost::multiprecision::cpp_int &private_key,
