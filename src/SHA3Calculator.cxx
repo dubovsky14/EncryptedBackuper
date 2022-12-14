@@ -31,7 +31,7 @@ void  SHA3Calculator::hash_message(const std::string &message)  {
     iterate_over_message();
 };
 
-boost::multiprecision::cpp_int SHA3Calculator::get_hash()   {
+boost::multiprecision::cpp_int SHA3Calculator::get_hash()   const   {
     cpp_int result = 0;
 
     const unsigned long long *state = reinterpret_cast<const unsigned long long *>(m_state);

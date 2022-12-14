@@ -9,6 +9,11 @@
 #include <string>
 
 namespace EncryptedBackuper {
+
+    boost::multiprecision::cpp_int calculate_sha3(const std::string &message, unsigned int sha3_type);
+
+    boost::multiprecision::cpp_int calculate_sha3_from_file(const std::string &file, unsigned int sha3_type);
+
     class SHA3Calculator   {
         public:
             SHA3Calculator()   = delete;
@@ -16,6 +21,7 @@ namespace EncryptedBackuper {
             /* output size = 512 for SHA3-512, 256 for SHA3-256 etc. */
             SHA3Calculator(unsigned int output_size);
 
+            /* Reset state to initial value, i.e. set all 1600 bits to 0 */
             void reset_state();
 
             void  hash_file(const std::string &input_file);
@@ -25,7 +31,8 @@ namespace EncryptedBackuper {
             /* will run the Keccak function again (hash the current state), it will update the state and returns the new hash*/
             boost::multiprecision::cpp_int apply_next_keccak_and_get_output();
 
-            boost::multiprecision::cpp_int get_hash();
+            /* just return the hash currently stored in the state. This method does not change the state. */
+            boost::multiprecision::cpp_int get_hash()   const;
 
         private:
             unsigned long long int  m_state[5][5];
@@ -93,8 +100,4 @@ namespace EncryptedBackuper {
     };
 
     unsigned long long int get_bit_length(const boost::multiprecision::cpp_int &number);
-
-    boost::multiprecision::cpp_int calculate_sha3(const std::string &message, unsigned int sha3_type);
-
-    boost::multiprecision::cpp_int calculate_sha3_from_file(const std::string &file, unsigned int sha3_type);
 }
