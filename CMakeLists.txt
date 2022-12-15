@@ -17,14 +17,14 @@ add_library(EncryptedBackuperLib ${SOURCES} ${SOURCES_AES})
 
 file(GLOB CI_TESTS_SOURCES "CI_tests/src/*.cxx")
 
-add_executable(EncryptedBackuper "utils/EncryptedBackuper.cxx")
+add_executable(Encryptor "utils/Encryptor.cxx")
 add_executable(generate_key_file "utils/generate_key_file.cxx")
 add_executable(tests ${CI_TESTS_SOURCES} "utils/tests.cxx")
 
-add_dependencies(EncryptedBackuper EncryptedBackuperLib )
+add_dependencies(Encryptor EncryptedBackuperLib )
 add_dependencies(tests EncryptedBackuperLib )
 add_dependencies(generate_key_file EncryptedBackuperLib )
 
-target_link_libraries(EncryptedBackuper EncryptedBackuperLib)
+target_link_libraries(Encryptor EncryptedBackuperLib)
 target_link_libraries(tests EncryptedBackuperLib)
 target_link_libraries(generate_key_file EncryptedBackuperLib)
