@@ -132,3 +132,20 @@ boost::multiprecision::cpp_int  KeyEncryptionTool::generate_rsa_bit_length_size_
     }
     return password_extended_hash;
 };
+
+bool KeyEncryptionTool::validate_keys() {
+    if (m_private_key<0)    {
+        return false;
+    }
+
+    RandomNumberGenerator rng(512);
+    for (unsigned int i = 0; i < 10; i++)   {
+        const cpp_int message       = rng.Random();
+        const cpp_int signature     = square_and_multiply(message, m_private_key, m_pq);
+        const cpp_int signature_decr= square_and_multiply(message, m_public_key, m_pq);
+        if (signature_decr != message)  {
+            return false;
+        }
+    }
+    return true;
+};

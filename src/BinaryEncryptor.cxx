@@ -43,7 +43,7 @@ void BinaryEncryptor::create_encrypted_binary( const std::string &binary_address
     const vector<string> list_of_input_files                = m_file_list_handler->get_list_of_files_full_paths();
     std::vector<long long int> list_of_input_files_sizes    = m_file_list_handler->get_files_sizes();
 
-    (*m_output_binary)  << std::noskipws << key_summary_string << ";";
+    (*m_output_binary)  << std::noskipws << key_summary_string << "|";
     encrypt_and_save_filelist_string(filelist_summary_string);
 
 
