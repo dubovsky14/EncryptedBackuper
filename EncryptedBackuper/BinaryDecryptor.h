@@ -40,5 +40,9 @@ namespace EncryptedBackuper     {
 
             void decrypt_files();
 
+            void print_out_keys()   const;
+
+            void print_out_filelist()   const;
+
     };
 }

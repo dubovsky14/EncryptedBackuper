@@ -142,7 +142,7 @@ bool KeyEncryptionTool::validate_keys() {
     for (unsigned int i = 0; i < 10; i++)   {
         const cpp_int message       = rng.Random();
         const cpp_int signature     = square_and_multiply(message, m_private_key, m_pq);
-        const cpp_int signature_decr= square_and_multiply(message, m_public_key, m_pq);
+        const cpp_int signature_decr= square_and_multiply(signature, m_public_key, m_pq);
         if (signature_decr != message)  {
             return false;
         }

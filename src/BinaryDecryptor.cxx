@@ -2,6 +2,7 @@
 #include "../EncryptedBackuper/BinaryDecryptor.h"
 
 #include "../EncryptedBackuper/StringOperations.h"
+#include "../EncryptedBackuper/RSA_related_math_functions.h"
 
 using namespace std;
 using namespace EncryptedBackuper;
@@ -14,6 +15,7 @@ void BinaryDecryptor::decrypt_files(const std::string &decrypted_files_folder, c
     m_input_binary = make_shared<ifstream>(m_encrypted_file_address, std::ios::binary | std::ios::in);
     load_keys(password);
     read_list_of_files();
+    print_out_filelist();
     decrypt_files();
 };
 
@@ -64,10 +66,28 @@ string BinaryDecryptor::read_filelist_string()  {
         if (one_aes_block == filelist_termination_string)   {
             return result;
         }
+        result = result + one_aes_block;
     }
     return result;
 };
 
 void BinaryDecryptor::decrypt_files()   {
 
+};
+
+void BinaryDecryptor::print_out_keys()  const {
+    cout << "RSA type = " << m_key_encryption_tool->get_rsa_key_length() << endl;
+    cout << "pq = 0x" << convert_cpp_int_to_hex_string(m_key_encryption_tool->get_rsa_pq()) << endl;
+    cout << "public_key = 0x" << convert_cpp_int_to_hex_string(m_key_encryption_tool->get_rsa_public_key()) << endl;
+    cout << "private_key = 0x" << convert_cpp_int_to_hex_string(m_key_encryption_tool->get_rsa_private_key()) << endl;
+    cout << "AES key = 0x" << convert_cpp_int_to_hex_string(m_key_encryption_tool->get_aes_key()) << endl;
+};
+
+void BinaryDecryptor::print_out_filelist()  const {
+    const vector<string> file_names           = m_file_list_handler->get_list_of_files_names_only();
+    const vector<long long int> file_sizes    = m_file_list_handler->get_files_sizes();
+
+    for (unsigned int i_file = 0; i_file < file_names.size(); i_file++) {
+        cout << file_names[i_file] << "\t\t" << file_sizes[i_file] << endl;
+    }
 };
