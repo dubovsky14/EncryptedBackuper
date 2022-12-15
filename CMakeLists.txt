@@ -6,8 +6,6 @@ find_package (AES PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../AES/ NO_DEFAULT_PATH)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/AES)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/AES/aes/)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/AES/bin/)
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_CXX_STANDARD 17)

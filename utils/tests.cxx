@@ -1,8 +1,8 @@
-#include "../../CI_tests/headers/RSA_test.h"
-#include "../../CI_tests/headers/SHA3_test.h"
-#include "../../CI_tests/headers/KeyFileHandler_test.h"
-#include "../../CI_tests/headers/FileListHandler_test.h"
-#include "../../CI_tests/headers/KeyEncryptionTool_test.h"
+#include "../CI_tests/headers/RSA_test.h"
+#include "../CI_tests/headers/SHA3_test.h"
+#include "../CI_tests/headers/KeyFileHandler_test.h"
+#include "../CI_tests/headers/FileListHandler_test.h"
+#include "../CI_tests/headers/KeyEncryptionTool_test.h"
 
 
 #include <iostream>
