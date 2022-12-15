@@ -22,9 +22,6 @@ namespace EncryptedBackuper     {
 
             void decrypt(const unsigned char *cipher_text, unsigned char *plain_text);
 
-            void xor_with_iv(unsigned char *text);
-
-            void xor_with_iv_and_store_in_iv(const unsigned char *text);
 
         private:
             unsigned char m_initial_vector[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
@@ -35,5 +32,9 @@ namespace EncryptedBackuper     {
             std::shared_ptr<AES::AESHandler>    m_aes_handler = nullptr;
 
             static std::vector<unsigned char>   cpp_int_to_unsigned_char_vector(const boost::multiprecision::cpp_int &number);
+
+            void xor_with_iv(unsigned char *text);
+
+            void xor_with_iv_and_store_in_iv(const unsigned char *text);
     };
 }
