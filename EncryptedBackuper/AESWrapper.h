@@ -14,7 +14,11 @@ namespace EncryptedBackuper     {
 
             void set_initial_vector(const unsigned char *initial_vector);
 
+            void encrypt(unsigned char *text);
+
             void encrypt(const unsigned char *plane_text, unsigned char *cipher_text);
+
+            void decrypt(unsigned char *text);
 
             void decrypt(const unsigned char *cipher_text, unsigned char *plane_text);
 

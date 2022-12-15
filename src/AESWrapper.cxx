@@ -6,7 +6,7 @@
 
 using namespace EncryptedBackuper;
 using namespace std;
-using AES::AESHandler;
+using namespace AES;
 using boost::multiprecision::cpp_int;
 
 AESWrapper::AESWrapper(const boost::multiprecision::cpp_int &aes_key, int key_length) {
@@ -28,12 +28,20 @@ void AESWrapper::set_initial_vector(const unsigned char *initial_vector)    {
 
 };
 
+void AESWrapper::encrypt(unsigned char *text)   {
+    m_aes_handler->Encrypt(text);
+};
+
 void AESWrapper::encrypt(const unsigned char *plane_text, unsigned char *cipher_text)   {
     m_aes_handler->Encrypt(plane_text, cipher_text);
 };
 
 void AESWrapper::decrypt(const unsigned char *cipher_text, unsigned char *plane_text)   {
     m_aes_handler->Decrypt(cipher_text,plane_text);
+};
+
+void AESWrapper::decrypt(unsigned char *text)   {
+    m_aes_handler->Decrypt(text);
 };
 
 std::vector<unsigned char>   AESWrapper::cpp_int_to_unsigned_char_vector(const boost::multiprecision::cpp_int &number)   {

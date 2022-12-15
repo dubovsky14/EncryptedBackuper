@@ -36,6 +36,7 @@ void KeyFileHandler::load_keys_from_file(const std::string &key_file, const std:
 
     m_pq            = cpp_int(lines_of_key_file[1]);
     m_public_key    = cpp_int(lines_of_key_file[2]);
+    m_private_key_encrypted = cpp_int(lines_of_key_file[3]);
     m_private_key   = KeyEncryptionTool::decrypt_private_key(cpp_int(lines_of_key_file[3]), password, m_rsa_type);
 
 };

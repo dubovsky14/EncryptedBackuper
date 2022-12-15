@@ -25,6 +25,8 @@ namespace EncryptedBackuper     {
 
             boost::multiprecision::cpp_int  get_public_key()    const   {return m_public_key;};
 
+            boost::multiprecision::cpp_int  get_private_key_encrypted()   const   {return m_private_key_encrypted;};
+
             boost::multiprecision::cpp_int  get_private_key()   const   {return m_private_key;};
 
             boost::multiprecision::cpp_int  get_pq()            const   {return m_pq;};
@@ -33,10 +35,11 @@ namespace EncryptedBackuper     {
             unsigned int                    get_rsa_type()      const   {return m_rsa_type;};
 
     private:
-            unsigned int                    m_rsa_type      = 0;
-            boost::multiprecision::cpp_int  m_pq            = 0;
-            boost::multiprecision::cpp_int  m_public_key    = 65537;
-            boost::multiprecision::cpp_int  m_private_key   = 0;
+            unsigned int                    m_rsa_type              = 0;
+            boost::multiprecision::cpp_int  m_pq                    = 0;
+            boost::multiprecision::cpp_int  m_public_key            = 65537;
+            boost::multiprecision::cpp_int  m_private_key           = 0;
+            boost::multiprecision::cpp_int  m_private_key_encrypted = 0;
 
             static std::vector<std::string> read_lines_of_text_file(const std::string &input_file, unsigned max_number_of_lines = 0);
 

@@ -1,19 +1,19 @@
 cmake_minimum_required(VERSION 2.8.13)
 project(EncryptedBackuper)
 
-find_package (AES PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../AES/ NO_DEFAULT_PATH)
-
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/AES)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-link_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/AES/aes/)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS "-Wall -O3")
 
 file(GLOB SOURCES "src/*.cxx")
-add_library(EncryptedBackuperLib ${SOURCES})
+file(GLOB SOURCES_AES "AES/src/*.cxx")
+
+add_library(EncryptedBackuperLib ${SOURCES} ${SOURCES_AES})
 
 file(GLOB CI_TESTS_SOURCES "CI_tests/src/*.cxx")
 
@@ -21,10 +21,10 @@ add_executable(EncryptedBackuper "utils/EncryptedBackuper.cxx")
 add_executable(generate_key_file "utils/generate_key_file.cxx")
 add_executable(tests ${CI_TESTS_SOURCES} "utils/tests.cxx")
 
-add_dependencies(EncryptedBackuper EncryptedBackuperLib)
-add_dependencies(tests EncryptedBackuperLib)
-add_dependencies(generate_key_file EncryptedBackuperLib)
+add_dependencies(EncryptedBackuper EncryptedBackuperLib )
+add_dependencies(tests EncryptedBackuperLib )
+add_dependencies(generate_key_file EncryptedBackuperLib )
 
-target_link_libraries(EncryptedBackuper -AES/lAES -lEncryptedBackuperLib)
-target_link_libraries(tests -AES/lAES -lEncryptedBackuperLib)
-target_link_libraries(generate_key_file -AES/lAES -lEncryptedBackuperLib)
+target_link_libraries(EncryptedBackuper EncryptedBackuperLib)
+target_link_libraries(tests EncryptedBackuperLib)
+target_link_libraries(generate_key_file EncryptedBackuperLib)
