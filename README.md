@@ -13,8 +13,6 @@ The encryption step looks at the provided filelist, hashes all the files in it, 
 This AES key is used to encrypt the files and after encrypting with the RSA public key, it is also saved into the output binary.
 In order to decrypt the AES key, one has to know the private key, and in order to get the private key, the password is required, so that it can be XOR-ed with the encrypted private key saved in the encrypted file.
 
-The package is still under development, with decryption part missing.
-
 
 How to download and compile the package
 ----------------------------------------
@@ -47,7 +45,9 @@ How to generate RSA pair of keys
 ./bin/generate_key_file <RSA key length> <output text file>
 ```
 
-```RSA key length``` is the maximal lenght of private key (or p*q) in bits, with options 512, 1024, 2048 and 4096 supported. For real applications at least 2048 is recommended.
+```RSA key length``` is the maximal lenght of private key (or p*q) in bits. Multiples of 512 are allowed.
+Longer key takes more time to generate and then more time to validate, however too short keys are vulnurable against some kinds of attacks.
+Recommended key length for real world applications is at least 2048 bits, prefferably 4096 bits.
 
 ```output text file``` is the output file where the RSA keys will be stored
 
