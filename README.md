@@ -26,10 +26,12 @@ The package is design for safe (encrypted) back-up of data.
 The key requirement is that the password required to decrypt the data is not saved anywhere on the disk and it is not needed for the encryption step.
 
 User needs to generate pair of RSA keys, using ```generate_key_file``` executable. He will be asked to provide a password.
-The pair of RSA keys is created in this step and the private key is XOR-ed with a pseudo-random number of the same length, obtained from SHA3-512 algorithm, with the password being the input for the hash function.
+The pair of RSA keys is created at this step and the private key is XOR-ed with a pseudo-random number of the same length, obtained from SHA3-512 algorithm, with the password being the input for the hash function.
 The key pair is then saved to a text file (with P*Q, key length and public key saved in plane text, private key being XOR-ed with the password hash).
 
-The encryption step looks at the provided filelist, hash all the files in it, add a random number, hashes it and uses this number as 256-bit AES key. This AES key is used to encrypt the files and after encrypting with the RSA public key, it is also saved into the output binary.
+The encryption step looks at the provided filelist, hashes all the files in it, add a random number, hashes it and uses this number as 256-bit AES key.
+This AES key is used to encrypt the files and after encrypting with the RSA public key, it is also saved into the output binary.
+In order to decrypt the AES key, one has to know the private key, and in order to get the private key, the password is required, so that it can be XOR-ed with the encrypted private key saved in the encrypted file.
 
 The package is still under development, with decryption part missing.
 
