@@ -30,6 +30,11 @@ void AESWrapper::xor_with_iv(unsigned char *text)   {
     *(reinterpret_cast<uint64_t *>(&text[8])) = *(reinterpret_cast<const uint64_t *>(&text[8])) ^ *(reinterpret_cast<const uint64_t *>(&m_initial_vector[8]));
 };
 
+void AESWrapper::xor_with_iv_and_store_in_iv(const unsigned char *text)   {
+    *(reinterpret_cast<uint64_t *>(&m_initial_vector[0])) = *(reinterpret_cast<const uint64_t *>(&text[0])) ^ *(reinterpret_cast<const uint64_t *>(&m_initial_vector[0]));
+    *(reinterpret_cast<uint64_t *>(&m_initial_vector[8])) = *(reinterpret_cast<const uint64_t *>(&text[8])) ^ *(reinterpret_cast<const uint64_t *>(&m_initial_vector[8]));
+};
+
 void AESWrapper::encrypt(unsigned char *text)   {
     if (!m_iv_mode)    {
         m_aes_handler->Encrypt(text);
@@ -41,17 +46,27 @@ void AESWrapper::encrypt(unsigned char *text)   {
     }
 };
 
-void AESWrapper::encrypt(const unsigned char *plane_text, unsigned char *cipher_text)   {
+void AESWrapper::encrypt(const unsigned char *plain_text, unsigned char *cipher_text)   {
     if (!m_iv_mode)    {
-        m_aes_handler->Encrypt(plane_text, cipher_text);
+        m_aes_handler->Encrypt(plain_text, cipher_text);
     }
     else {
+        xor_with_iv_and_store_in_iv(plain_text);
+        m_aes_handler->Encrypt(m_initial_vector);
         memcpy(cipher_text, m_initial_vector, 16);
     }
 };
 
-void AESWrapper::decrypt(const unsigned char *cipher_text, unsigned char *plane_text)   {
-    m_aes_handler->Decrypt(cipher_text,plane_text);
+void AESWrapper::decrypt(const unsigned char *cipher_text, unsigned char *plain_text)   {
+    if (!m_iv_mode)    {
+        m_aes_handler->Decrypt(cipher_text,plain_text);
+    }
+    else {
+        memcpy(plain_text, cipher_text, 16);
+        m_aes_handler->Decrypt(plain_text);
+        xor_with_iv(plain_text);
+        memcpy(m_initial_vector, plain_text, 16);
+    }
 };
 
 void AESWrapper::decrypt(unsigned char *text)   {
