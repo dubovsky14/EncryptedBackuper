@@ -17,20 +17,27 @@ int main(int argc, const char **argv)   {
         cout << "Two input arguments are expected:";
         cout << "\t1st = length of RSA key:";
         cout << "\t2nd = address of the file with generated keys";
+        return 1;
     }
 
-    const unsigned int rsa_type = std::stoi(std::string(argv[1]));
-    const string       key_file = argv[2];
+    try {
+        const unsigned int rsa_type = std::stoi(std::string(argv[1]));
+        const string       key_file = argv[2];
 
-    KeyFileHandler  key_file_handler;
-    key_file_handler.generate_keys(rsa_type);
+        KeyFileHandler  key_file_handler;
+        key_file_handler.generate_keys(rsa_type);
 
-    cout << "Please type in your password and hit enter\n";
-    string password;
-    cin >> password;
+        cout << "Please type in your password and hit enter\n";
+        string password;
+        cin >> password;
 
-    key_file_handler.save_keys_to_file(key_file, password);
-    password = "";
+        key_file_handler.save_keys_to_file(key_file, password);
+        password = "";
 
-    return 0;
+        return 0;
+    }
+    catch (const std::string &e)    {
+        cout << e << endl;
+    }
+    abort();
 };

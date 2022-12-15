@@ -9,7 +9,8 @@ using namespace std;
 using namespace AES;
 using boost::multiprecision::cpp_int;
 
-AESWrapper::AESWrapper(const boost::multiprecision::cpp_int &aes_key, int key_length) {
+AESWrapper::AESWrapper(const boost::multiprecision::cpp_int &aes_key, int key_length, bool iv_mode) {
+    m_iv_mode = iv_mode;
     if (key_length != 128 && key_length != 192 && key_length != 256)   {
         throw std::string("AESHandler::Invalid key size: " + std::to_string(key_length) + " bits");
     }
@@ -24,16 +25,29 @@ AESWrapper::AESWrapper(const boost::multiprecision::cpp_int &aes_key, int key_le
     m_aes_handler = make_shared<AESHandler>(&key_uchar_vector[0], key_length);
 };
 
-void AESWrapper::set_initial_vector(const unsigned char *initial_vector)    {
-
+void AESWrapper::xor_with_iv(unsigned char *text)   {
+    *(reinterpret_cast<uint64_t *>(&text[0])) = *(reinterpret_cast<const uint64_t *>(&text[0])) ^ *(reinterpret_cast<const uint64_t *>(&m_initial_vector[0]));
+    *(reinterpret_cast<uint64_t *>(&text[8])) = *(reinterpret_cast<const uint64_t *>(&text[8])) ^ *(reinterpret_cast<const uint64_t *>(&m_initial_vector[8]));
 };
 
 void AESWrapper::encrypt(unsigned char *text)   {
-    m_aes_handler->Encrypt(text);
+    if (!m_iv_mode)    {
+        m_aes_handler->Encrypt(text);
+    }
+    else {
+        xor_with_iv(text);
+        m_aes_handler->Encrypt(text);
+        memcpy(m_initial_vector, text, 16);
+    }
 };
 
 void AESWrapper::encrypt(const unsigned char *plane_text, unsigned char *cipher_text)   {
-    m_aes_handler->Encrypt(plane_text, cipher_text);
+    if (!m_iv_mode)    {
+        m_aes_handler->Encrypt(plane_text, cipher_text);
+    }
+    else {
+        memcpy(cipher_text, m_initial_vector, 16);
+    }
 };
 
 void AESWrapper::decrypt(const unsigned char *cipher_text, unsigned char *plane_text)   {
@@ -41,7 +55,15 @@ void AESWrapper::decrypt(const unsigned char *cipher_text, unsigned char *plane_
 };
 
 void AESWrapper::decrypt(unsigned char *text)   {
-    m_aes_handler->Decrypt(text);
+    if (!m_iv_mode)    {
+        m_aes_handler->Decrypt(text);
+    }
+    else {
+        memcpy(m_buffer, text, 16);
+        m_aes_handler->Decrypt(text);
+        xor_with_iv(text);
+        memcpy(m_initial_vector, m_buffer, 16);
+    }
 };
 
 std::vector<unsigned char>   AESWrapper::cpp_int_to_unsigned_char_vector(const boost::multiprecision::cpp_int &number)   {

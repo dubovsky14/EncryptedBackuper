@@ -10,9 +10,9 @@
 namespace EncryptedBackuper     {
     class AESWrapper   {
         public:
-            AESWrapper(const boost::multiprecision::cpp_int &aes_key, int key_length);
 
-            void set_initial_vector(const unsigned char *initial_vector);
+            /* iv_mode = true means that when running th encryption of (N+1)-th block, the plain text from N+1 block will be firstly XOR-ed with encrypted text from N-th block */
+            AESWrapper(const boost::multiprecision::cpp_int &aes_key, int key_length, bool iv_mode = true);
 
             void encrypt(unsigned char *text);
 
@@ -22,9 +22,13 @@ namespace EncryptedBackuper     {
 
             void decrypt(const unsigned char *cipher_text, unsigned char *plane_text);
 
+            void xor_with_iv(unsigned char *text);
+
         private:
-            unsigned char m_initial_vector[16];
-            unsigned char m_state[16];
+            unsigned char m_initial_vector[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
+            unsigned char m_buffer[16];
+
+            bool m_iv_mode;
 
             std::shared_ptr<AES::AESHandler>    m_aes_handler = nullptr;
 
