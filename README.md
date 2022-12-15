@@ -3,13 +3,20 @@
 Package description
 ---------------------
 The package is design for safe (encrypted) back-up of data.
-The key requirement is that the password required to decrypt the data is not saved anywhere on the disk and it is not needed for the encryption step.
 
-User needs to generate pair of RSA keys, using ```generate_key_file``` executable. He will be asked to provide a password.
+The key features, that the framework was design to accomplish:
+
+* This framework + encrypted file + password is enough to decrypt the files.
+* The password is not needed for the encryption step and the password is not stored on disk (or anywhere else), so that the encryption and back-up processes can be fully automated without a security risk of exposing the password to an attacker.
+* Password must be a string that a user can choose at will (i.e. RSA private key calculated from public key using Extended Euclidean Algorithm is not a good password, as for the user it's just a random number at least 2048 bits long - good luck with memorizing such password ... Choosing private key as (hash of) a password, and calculating public key is also not a good idea, since it limits the set of available passwords - it cannot result in even number private key for example)
+* Without a password, an attacker cannot say anything about the encrypted files except for their approximate total size (from size of the encrypted binary).
+* Decrypting the files without the password must be as difficult as 256-bit AES cracking or cracking the RSA of a chosen length.
+
+To use the framework, the user needs to generate pair of RSA keys, using ```generate_key_file``` executable. He will be asked to provide a password.
 The pair of RSA keys is created at this step and the private key is XOR-ed with a pseudo-random number of the same length, obtained from SHA3-512 algorithm, with the password being the input for the hash function.
-The key pair is then saved to a text file (with P*Q, key length and public key saved in plane text, private key being XOR-ed with the password hash).
+The key pair is then saved to a text file (with P*Q, key length and public key saved in plain text, private key being XOR-ed with the password hash).
 
-The encryption step looks at the provided filelist, hashes all the files in it, add a random number, hashes it and uses this number as 256-bit AES key.
+The encryption step looks at the provided filelist, hashes all the files in it, add a random number, hashes it again and uses this number as 256-bit AES key.
 This AES key is used to encrypt the files and after encrypting with the RSA public key, it is also saved into the output binary.
 In order to decrypt the AES key, one has to know the private key, and in order to get the private key, the password is required, so that it can be XOR-ed with the encrypted private key saved in the encrypted file.
 
@@ -46,16 +53,19 @@ How to generate RSA pair of keys
 ```
 
 ```RSA key length``` is the maximal lenght of private key (or p*q) in bits. Multiples of 512 are allowed.
-Longer key takes more time to generate and then more time to validate, however too short keys are vulnurable against some kinds of attacks.
-Recommended key length for real world applications is at least 2048 bits, prefferably 4096 bits.
+Longer key takes more time to generate and then more time to validate, however too short keys are vulnerable against some kinds of attacks.
+Recommended key length for real world applications is at least 2048 bits, preferably 4096 bits.
 
 ```output text file``` is the output file where the RSA keys will be stored
 
+The user will be asked to provide a password. The password will be hashed using SHA3-512.
+Then Keccak-f function will be applied ```RSA key length/512``` times in on order to get pseudo-random number of the same length as private key.
+This pseudo-random number will then be XOR-ed with the private key and the result will be stored in the output text file (and copied to the encrypted binaries during encryption step).
 
 How to encrypt
 ---------------------------------
 
-Before the  encryption step, one has to generate the pair of RSA keys (describe above) and create a filelist. The filelist is just a list of files (each line being one file), which are going to be encrypted.
+Before the  encryption step, one has to generate the pair of RSA keys (described above) and create a filelist. The filelist is just a list of files (each line being one file), which are going to be encrypted.
 
 In order to run the encryption:
 
