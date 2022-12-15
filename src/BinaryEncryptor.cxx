@@ -44,7 +44,7 @@ void BinaryEncryptor::create_encrypted_binary( const std::string &binary_address
     std::vector<long long int> list_of_input_files_sizes    = m_file_list_handler->get_files_sizes();
 
     (*m_output_binary)  << std::noskipws << key_summary_string << ";";
-    (*m_output_binary)  << std::noskipws << filelist_summary_string << ";";
+    encrypt_and_save_filelist_string(filelist_summary_string);
 
 
     for (unsigned int i_file = 0; i_file < list_of_input_files.size(); i_file++)    {
@@ -64,9 +64,47 @@ void BinaryEncryptor::encrypt_and_save_input_file(const std::string &input_file_
                     >> input_buffer[0] >> input_buffer[1] >> input_buffer[2] >> input_buffer[3] >> input_buffer[4] >> input_buffer[5] >> input_buffer[6] >> input_buffer[7]
                     >> input_buffer[8] >> input_buffer[9] >> input_buffer[10] >> input_buffer[11] >> input_buffer[12] >> input_buffer[13] >> input_buffer[14] >> input_buffer[15];
         m_aes_wrapper->encrypt(input_buffer);
-        (*m_output_binary)  << std::noskipws
-                            << (input_buffer[0]) << (input_buffer[1]) << (input_buffer[2]) << (input_buffer[3]) << (input_buffer[4]) << (input_buffer[5]) << (input_buffer[6]) << (input_buffer[7])
-                            << (input_buffer[8]) << (input_buffer[9]) << (input_buffer[10]) << (input_buffer[11]) << (input_buffer[12]) << (input_buffer[13]) << (input_buffer[14]) << (input_buffer[15]);
+        write_buffer(input_buffer);
     }
     // TODO: check if the size of the file did not change from between it was checked and now
+};
+
+void BinaryEncryptor::encrypt_and_save_filelist_string(const std::string &filelist_string)   {
+    const unsigned int original_length = filelist_string.length();
+    const unsigned int number_of_aes_blocks_wo_padding = (original_length/16);
+
+    unsigned char buffer[16];
+    for (unsigned int i_block = 0; i_block < number_of_aes_blocks_wo_padding; i_block++)    {
+        for (unsigned int i_char = 0; i_char < 16; i_char++)    {
+            buffer[i_char] = filelist_string[i_block*16 + i_char];
+        }
+        m_aes_wrapper->encrypt(buffer);
+        write_buffer(buffer);
+    };
+
+    // padding of the filelist, to fit into 16 bytes block of AES
+    unsigned int chars_in_padding_block = original_length % 16;
+    for (unsigned int i_char = 0; i_char < chars_in_padding_block; i_char++)    {
+            buffer[i_char] = filelist_string[number_of_aes_blocks_wo_padding*16 + i_char];
+    }
+    for (unsigned int i_char = chars_in_padding_block; i_char < 16; i_char++)    {
+            buffer[i_char] = ';';
+    }
+    m_aes_wrapper->encrypt(buffer);
+    write_buffer(buffer);
+
+    // 16 byte string signalizing the end of filelist
+    const string filelist_termination_string = "/*FILELIST_END*/";
+    for (unsigned int i_char = 0; i_char < 16; i_char++)    {
+        buffer[i_char] = filelist_termination_string[i_char];
+    }
+    m_aes_wrapper->encrypt(buffer);
+    write_buffer(buffer);
+};
+
+void BinaryEncryptor::write_buffer(const unsigned char *buffer) {
+        (*m_output_binary)  << std::noskipws
+                            << (buffer[0]) << (buffer[1]) << (buffer[2]) << (buffer[3]) << (buffer[4]) << (buffer[5]) << (buffer[6]) << (buffer[7])
+                            << (buffer[8]) << (buffer[9]) << (buffer[10]) << (buffer[11]) << (buffer[12]) << (buffer[13]) << (buffer[14]) << (buffer[15]);
+
 };
