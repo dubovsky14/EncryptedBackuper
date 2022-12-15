@@ -28,7 +28,7 @@ namespace EncryptedBackuper     {
             boost::multiprecision::cpp_int m_aes_key = -1;
 
             std::string m_encrypted_file_address;
-            std::string decrypted_files_folder;
+            std::string m_decrypted_files_folder;
 
             std::shared_ptr<std::ifstream> m_input_binary = nullptr;
 
@@ -39,6 +39,8 @@ namespace EncryptedBackuper     {
             std::string read_filelist_string();
 
             void decrypt_files();
+
+            void decrypt_file(const std::string &file_address, long long int file_size);
 
             void print_out_keys()   const;
 

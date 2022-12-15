@@ -62,3 +62,17 @@ In order to run the encryption:
 ```
 ./bin/Encryptor <text file with RSA keys> <filelist> <address of the encrypted output file>
 ```
+
+
+How to decrypt
+---------------------------------
+
+Decryption step reads all the keys from the encrypted file, so text file with RSA keys is not needed.
+During the encryption you will be asked to provide the password.
+Password will be verified and program will warn you and quit if the password is incorrect (the AES key cannot be decrypted in that case).
+
+In order to run the decryption:
+
+```
+./bin/Decryptor <address of the encrypted file> <address of the folder where decrypted files will be stored>
+```

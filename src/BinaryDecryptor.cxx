@@ -13,6 +13,7 @@ BinaryDecryptor::BinaryDecryptor(const std::string &encrypted_file_address) {
 
 void BinaryDecryptor::decrypt_files(const std::string &decrypted_files_folder, const std::string &password) {
     m_input_binary = make_shared<ifstream>(m_encrypted_file_address, std::ios::binary | std::ios::in);
+    m_decrypted_files_folder = decrypted_files_folder;
     load_keys(password);
     read_list_of_files();
     print_out_filelist();
@@ -72,8 +73,45 @@ string BinaryDecryptor::read_filelist_string()  {
 };
 
 void BinaryDecryptor::decrypt_files()   {
+    const vector<string> file_names           = m_file_list_handler->get_list_of_files_names_only();
+    const vector<long long int> file_sizes    = m_file_list_handler->get_files_sizes();
 
+    for (unsigned int i_file = 0; i_file < file_names.size(); i_file++) {
+        if (file_sizes[i_file] < 0) {
+            continue;
+        }
+        decrypt_file(m_decrypted_files_folder + "/" + file_names[i_file], file_sizes[i_file]);
+    }
 };
+
+void BinaryDecryptor::decrypt_file(const string &file_address, long long int file_size)   {
+    unsigned char buffer[16];
+    ofstream output_file(file_address, std::ios::binary | std::ios::out);
+
+    const long long int number_of_full_16bytes_blocks = file_size/16;
+    for(long long int i_block = 0; i_block < number_of_full_16bytes_blocks; i_block++)    {
+        (*m_input_binary)   >> std::noskipws
+                            >> buffer[0] >> buffer[1] >> buffer[2] >> buffer[3] >> buffer[4] >> buffer[5] >> buffer[6] >> buffer[7]
+                            >> buffer[8] >> buffer[9] >> buffer[10] >> buffer[11] >> buffer[12] >> buffer[13] >> buffer[14] >> buffer[15];
+        m_aes_wrapper->decrypt(buffer);
+        output_file << std::noskipws
+                    << (buffer[0]) << (buffer[1]) << (buffer[2]) << (buffer[3]) << (buffer[4]) << (buffer[5]) << (buffer[6]) << (buffer[7])
+                    << (buffer[8]) << (buffer[9]) << (buffer[10]) << (buffer[11]) << (buffer[12]) << (buffer[13]) << (buffer[14]) << (buffer[15]);
+    }
+
+    // The last block is special, since not all bytes are real
+    const unsigned int number_of_bytes_in_last_block = file_size % 16;
+    (*m_input_binary)   >> std::noskipws
+                        >> buffer[0] >> buffer[1] >> buffer[2] >> buffer[3] >> buffer[4] >> buffer[5] >> buffer[6] >> buffer[7]
+                        >> buffer[8] >> buffer[9] >> buffer[10] >> buffer[11] >> buffer[12] >> buffer[13] >> buffer[14] >> buffer[15];
+    m_aes_wrapper->decrypt(buffer);
+    for(long long int i_byte = 0; i_byte < number_of_bytes_in_last_block; i_byte++) {
+        output_file << std::noskipws << (buffer[i_byte]);
+    }
+
+
+    output_file.close();
+}
 
 void BinaryDecryptor::print_out_keys()  const {
     cout << "RSA type = " << m_key_encryption_tool->get_rsa_key_length() << endl;
