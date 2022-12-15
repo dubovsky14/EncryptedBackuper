@@ -11,15 +11,9 @@ In order to checkout and compile the code (when the boost is already installed):
 ```
 git clone --recursive  git@github.com:dubovsky14/EncryptedBackuper.git
 
-mkdir bin AES/bin
+mkdir bin
 
-cd AES/bin
-
-cmake ../.
-
-make
-
-cd ../../bin
+cd bin
 
 cmake ../.
 
