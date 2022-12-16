@@ -73,6 +73,17 @@ In order to run the encryption:
 ./bin/Encryptor <text file with RSA keys> <filelist> <address of the encrypted output file>
 ```
 
+How to encrypt automatically
+---------------------------------
+
+The framework provides also additional way to encrypt, which checks all files in the filelists and create the encrypted file only if there is a change with respect to the previous backup. This can be used to automate encryption and back-up. The name and address of the binary is selected by the user, but timestamp suffix is added in order not to rewrite older back-ups
+
+```
+./bin/Encryptor <text file with RSA keys> <filelist> <address of the encrypted output file (without timestamp suffix)> <address of the text file where hashes will be stored>
+```
+
+The framework looks at the text file with hashes. If all hashes match, it does not run the encryption.
+If the hash file does not exist, or if at least one file is changed, it runs the encryption and updates the file with hashes.
 
 How to decrypt
 ---------------------------------
