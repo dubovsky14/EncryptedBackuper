@@ -19,7 +19,7 @@ using namespace boost::multiprecision;
 const string KeyEncryptionTool::s_keyword_rsa_length                  = "rsa_length";
 const string KeyEncryptionTool::s_keyword_rsa_pq                      = "rsa_pq";
 const string KeyEncryptionTool::s_keyword_rsa_public_key              = "rsa_public_key";
-const string KeyEncryptionTool::s_keyword_rsa_private_key_encrypted   = "rsa_private_encrypted";
+const string KeyEncryptionTool::s_keyword_rsa_private_key_encrypted   = "rsa_private_key_encrypted";
 const string KeyEncryptionTool::s_keyword_aes_key_encrypted           = "aes_key_encrypted";
 
 void KeyEncryptionTool::set_rsa_keys(   const boost::multiprecision::cpp_int &pq,
@@ -41,10 +41,21 @@ boost::multiprecision::cpp_int KeyEncryptionTool::generate_aes_key(const std::st
 };
 
 boost::multiprecision::cpp_int KeyEncryptionTool::encrypt_aes_key(const boost::multiprecision::cpp_int &aes_key)    const   {
-    if (aes_key > m_pq) {
+    // add a padding, so that the padded key length in bits will be (m_rsa_key_size - 256)
+    cpp_int aes_key_padded = 0;
+    const unsigned int n_padding_blocks = (m_rsa_key_size - 512)/256; // 512 = 256 (key length) + 256 (to ensure that padded key < pq)
+    const cpp_int two_to_256 = square_and_multiply(2, 256,0);
+    RandomNumberGenerator rng(256);
+    for (unsigned int i_padding_block = 0; i_padding_block < n_padding_blocks; i_padding_block++)   {
+        aes_key_padded += rng.Random();
+        aes_key_padded *= two_to_256;
+    }
+    aes_key_padded += aes_key;
+
+    if (aes_key_padded > m_pq) {
         throw std::string("KeyEncryptionTool::encrypt_aes_key: Unable to encrypt. The provided AES key is larger than P*Q expresion in RSA key");
     }
-    return square_and_multiply(aes_key, m_public_key, m_pq);
+    return square_and_multiply(aes_key_padded, m_public_key, m_pq);
 };
 
 boost::multiprecision::cpp_int KeyEncryptionTool::decrypt_aes_key(  const boost::multiprecision::cpp_int &aes_key_encrypted,
@@ -53,7 +64,8 @@ boost::multiprecision::cpp_int KeyEncryptionTool::decrypt_aes_key(  const boost:
         throw std::string("KeyEncryptionTool::dencrypt_aes_key: Unable to decrypt. The provided encrypted AES key is larger than P*Q expresion in RSA key");
     }
     cpp_int rsa_private_key = decrypt_private_key(m_private_key_xor_password_hash, password, m_rsa_key_size);
-    return square_and_multiply(aes_key_encrypted, rsa_private_key, m_pq);
+    const cpp_int padded_aes_key = square_and_multiply(aes_key_encrypted, rsa_private_key, m_pq);
+    return cpp_int(padded_aes_key % square_and_multiply(2, 256,0));
 };
 
 std::string KeyEncryptionTool::produce_key_summary_string(const boost::multiprecision::cpp_int &aes_key)    const    {
