@@ -65,6 +65,10 @@ namespace EncryptedBackuper     {
             boost::multiprecision::cpp_int  m_aes_key_encrypted = -1;
             boost::multiprecision::cpp_int  m_aes_key           = -1;
 
-
+            static const std::string s_keyword_rsa_length;
+            static const std::string s_keyword_rsa_pq;
+            static const std::string s_keyword_rsa_public_key;
+            static const std::string s_keyword_rsa_private_key_encrypted;
+            static const std::string s_keyword_aes_key_encrypted;
     };
 }

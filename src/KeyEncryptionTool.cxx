@@ -10,10 +10,17 @@
 
 
 #include <string>
+#include <map>
 
 using namespace std;
 using namespace EncryptedBackuper;
 using namespace boost::multiprecision;
+
+const string KeyEncryptionTool::s_keyword_rsa_length                  = "rsa_length";
+const string KeyEncryptionTool::s_keyword_rsa_pq                      = "rsa_pq";
+const string KeyEncryptionTool::s_keyword_rsa_public_key              = "rsa_public_key";
+const string KeyEncryptionTool::s_keyword_rsa_private_key_encrypted   = "rsa_private_encrypted";
+const string KeyEncryptionTool::s_keyword_aes_key_encrypted           = "aes_key_encrypted";
 
 void KeyEncryptionTool::set_rsa_keys(   const boost::multiprecision::cpp_int &pq,
                                         const boost::multiprecision::cpp_int &public_key,
@@ -50,42 +57,43 @@ boost::multiprecision::cpp_int KeyEncryptionTool::decrypt_aes_key(  const boost:
 };
 
 std::string KeyEncryptionTool::produce_key_summary_string(const boost::multiprecision::cpp_int &aes_key)    const    {
-    //rsa_length=value;rsa_pq=value;rsa_public_key=value;rsa_private_key_XOR_keccak(password)=value;aes_key_encrypted=value
+    //rsa_length=value;rsa_pq=value;rsa_public_key=value;rsa_private_encrypted=value;aes_key_encrypted=value
     const cpp_int aes_key_encrypted = encrypt_aes_key(aes_key);
 
-    string result = "rsa_length=" + std::to_string(m_rsa_key_size);
-    result = result + ";" + "rsa_pq=0x" + convert_cpp_int_to_hex_string(m_pq);
-    result = result + ";" + "rsa_public_key=0x" + convert_cpp_int_to_hex_string(m_public_key);
-    result = result + ";" + "rsa_private_key_XOR_keccak(password)=0x" + convert_cpp_int_to_hex_string(m_private_key_xor_password_hash);
-    result = result + ";" + "aes_key_encrypted=0x" + convert_cpp_int_to_hex_string(aes_key_encrypted);
+    string result =  s_keyword_rsa_length + "=" + std::to_string(m_rsa_key_size);
+    result = result + ";" + s_keyword_rsa_pq + "=0x" + convert_cpp_int_to_hex_string(m_pq);
+    result = result + ";" + s_keyword_rsa_public_key + "=0x" + convert_cpp_int_to_hex_string(m_public_key);
+    result = result + ";" + s_keyword_rsa_private_key_encrypted + "=0x" + convert_cpp_int_to_hex_string(m_private_key_xor_password_hash);
+    result = result + ";" + s_keyword_aes_key_encrypted + "=0x" + convert_cpp_int_to_hex_string(aes_key_encrypted);
 
     return result;
 };
 
 void KeyEncryptionTool::load_key_summary_string(const std::string key_summary_string, const std::string &password)   {
     try {
+        map<string,string> summary_key_map;
         const vector<string> vector_key_name_vs_key_value = SplitString(key_summary_string, ";");
-        if (vector_key_name_vs_key_value.size() < 5)    {
-            throw string("Unabe to load key summary string. One of the keys is missing.");
+        for (const string &name_and_value_string : vector_key_name_vs_key_value)   {
+            const vector<string> name_and_value = SplitString(name_and_value_string, "=");
+            if (name_and_value.size() != 2)  {
+                continue;
+            }
+            summary_key_map[name_and_value[0]] = name_and_value[1];
         }
 
-        vector<string> rsa_key_and_size_vector = SplitString(vector_key_name_vs_key_value[0], "=");
-            if (rsa_key_and_size_vector.size() != 2) {
-                throw string("Unable to load summary string. Unknown input structure.");
+        auto read_value = [summary_key_map](const string &name) {
+            if (summary_key_map.find(name) == summary_key_map.end())    {
+                throw std::string("Unable to read key summary string. Undefined option: " + name);
             }
-            m_rsa_key_size = std::stoi(rsa_key_and_size_vector[1]);
-
-        auto read_hex_value = [vector_key_name_vs_key_value](int index)   {
-            vector<string> name_and_value = SplitString(vector_key_name_vs_key_value[index], "=");
-            if (name_and_value.size() != 2) {
-                throw string("Unable to load summary string. Unknown input structure.");
-            }
-            return cpp_int(name_and_value[1]);
+            return summary_key_map.at(name);
         };
-        m_pq = read_hex_value(1);
-        m_public_key = read_hex_value(2);
-        m_private_key_xor_password_hash = read_hex_value(3);
-        m_aes_key_encrypted = read_hex_value(4);
+
+        m_rsa_key_size                  = std::stoi(read_value(s_keyword_rsa_length));
+        m_pq                            = cpp_int(read_value(s_keyword_rsa_pq));
+        m_public_key                    = cpp_int(read_value(s_keyword_rsa_public_key));
+        m_private_key_xor_password_hash = cpp_int(read_value(s_keyword_rsa_private_key_encrypted));
+        m_aes_key_encrypted             = cpp_int(read_value(s_keyword_aes_key_encrypted));
+
         if (password.length() > 0)  {
             m_private_key = decrypt_private_key(m_private_key_xor_password_hash, password, m_rsa_key_size);
             m_aes_key = decrypt_aes_key(m_aes_key_encrypted, password);
