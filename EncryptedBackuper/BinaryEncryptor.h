@@ -39,7 +39,5 @@ namespace EncryptedBackuper     {
             void encrypt_and_save_input_file(const std::string &input_file_address);
 
             void encrypt_and_save_filelist_string(const std::string &filelist_string);
-
-            void write_buffer(const unsigned char *buffer);
     };
 }

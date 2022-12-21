@@ -1,4 +1,5 @@
 #include "../EncryptedBackuper/BinaryEncryptor.h"
+#include "../EncryptedBackuper/BinaryFileFunctions.h"
 
 using namespace EncryptedBackuper;
 using namespace std;
@@ -60,11 +61,9 @@ void BinaryEncryptor::encrypt_and_save_input_file(const std::string &input_file_
     ifstream input_file(input_file_address, std::ios::binary | std::ios::in);
     unsigned char input_buffer[16];
     while(input_file.good())    {
-        input_file  >> std::noskipws
-                    >> input_buffer[0] >> input_buffer[1] >> input_buffer[2] >> input_buffer[3] >> input_buffer[4] >> input_buffer[5] >> input_buffer[6] >> input_buffer[7]
-                    >> input_buffer[8] >> input_buffer[9] >> input_buffer[10] >> input_buffer[11] >> input_buffer[12] >> input_buffer[13] >> input_buffer[14] >> input_buffer[15];
+        ReadFromFile(&input_file, input_buffer);
         m_aes_wrapper->encrypt(input_buffer);
-        write_buffer(input_buffer);
+        WriteToFile(m_output_binary.get(), input_buffer);
     }
     // TODO: check if the size of the file did not change from between it was checked and now
 };
@@ -79,7 +78,7 @@ void BinaryEncryptor::encrypt_and_save_filelist_string(const std::string &fileli
             buffer[i_char] = filelist_string[i_block*16 + i_char];
         }
         m_aes_wrapper->encrypt(buffer);
-        write_buffer(buffer);
+        WriteToFile(m_output_binary.get(), buffer);
     };
 
     // padding of the filelist, to fit into 16 bytes block of AES
@@ -91,20 +90,12 @@ void BinaryEncryptor::encrypt_and_save_filelist_string(const std::string &fileli
             buffer[i_char] = ';';
     }
     m_aes_wrapper->encrypt(buffer);
-    write_buffer(buffer);
+    WriteToFile(m_output_binary.get(), buffer);
 
     // 16 byte string signalizing the end of filelist
-    const string filelist_termination_string = "/*FILELIST_END*/";
     for (unsigned int i_char = 0; i_char < 16; i_char++)    {
         buffer[i_char] = filelist_termination_string[i_char];
     }
     m_aes_wrapper->encrypt(buffer);
-    write_buffer(buffer);
-};
-
-void BinaryEncryptor::write_buffer(const unsigned char *buffer) {
-        (*m_output_binary)  << std::noskipws
-                            << (buffer[0]) << (buffer[1]) << (buffer[2]) << (buffer[3]) << (buffer[4]) << (buffer[5]) << (buffer[6]) << (buffer[7])
-                            << (buffer[8]) << (buffer[9]) << (buffer[10]) << (buffer[11]) << (buffer[12]) << (buffer[13]) << (buffer[14]) << (buffer[15]);
-
+    WriteToFile(m_output_binary.get(), buffer);
 };
