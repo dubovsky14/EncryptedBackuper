@@ -9,10 +9,10 @@ vector<cpp_int> EncryptedBackuper::extended_euclidean_algorithm(const cpp_int &a
         return vector<cpp_int>({b, cpp_int(0), cpp_int(1)});
     }
 
-    vector<cpp_int> prev_result = extended_euclidean_algorithm(cpp_int(b % a), a);
-    cpp_int gcd  =  prev_result[0];
-    cpp_int x    =  prev_result[1];
-    cpp_int y    =  prev_result[2];
+    const vector<cpp_int> prev_result = extended_euclidean_algorithm(cpp_int(b % a), a);
+    const cpp_int gcd  =  prev_result[0];
+    const cpp_int x    =  prev_result[1];
+    const cpp_int y    =  prev_result[2];
 
     return vector<cpp_int>({gcd, (y - (b/a) * x), x});
 };
@@ -60,9 +60,9 @@ bool EncryptedBackuper::generate_rsa_keys( cpp_int *pq,
                         const cpp_int &public_key,
                         unsigned int key_size)  {
     RandomNumberGenerator rng(key_size/2);
-    cpp_int p = generate_random_prime(&rng);
-    cpp_int q = generate_random_prime(&rng);
-    cpp_int euler_phi = (p-1)*(q-1);
+    const cpp_int p = generate_random_prime(&rng);
+    const cpp_int q = generate_random_prime(&rng);
+    const cpp_int euler_phi = (p-1)*(q-1);
     (*pq)  = p*q;
 
     bool key_is_valid;

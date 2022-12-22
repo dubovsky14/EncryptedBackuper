@@ -70,7 +70,7 @@ void    FileListHandler::create_files_hashes_file(const std::string &file_hashes
 };
 
 bool    FileListHandler::files_are_up_to_date(const std::string &reference_hashes_file) const   {
-    vector<string> reference_hashes = get_hashes_from_reference_hash_file(reference_hashes_file);
+    const vector<string> reference_hashes = get_hashes_from_reference_hash_file(reference_hashes_file);
     vector<string> current_hashes;
     for (unsigned int i_file = 0; i_file < m_filelist_full_paths.size(); i_file++)  {
         if (m_files_sizes[i_file] < 0)  {

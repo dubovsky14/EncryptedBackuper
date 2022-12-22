@@ -63,7 +63,7 @@ boost::multiprecision::cpp_int KeyEncryptionTool::decrypt_aes_key(  const boost:
     if (aes_key_encrypted > m_pq) {
         throw std::string("KeyEncryptionTool::dencrypt_aes_key: Unable to decrypt. The provided encrypted AES key is larger than P*Q expresion in RSA key");
     }
-    cpp_int rsa_private_key = decrypt_private_key(m_private_key_xor_password_hash, password, m_rsa_key_size);
+    const cpp_int rsa_private_key = decrypt_private_key(m_private_key_xor_password_hash, password, m_rsa_key_size);
     const cpp_int padded_aes_key = square_and_multiply(aes_key_encrypted, rsa_private_key, m_pq);
     return cpp_int(padded_aes_key % square_and_multiply(2, 256,0));
 };
@@ -83,6 +83,7 @@ std::string KeyEncryptionTool::produce_key_summary_string(const boost::multiprec
 
 void KeyEncryptionTool::load_key_summary_string(const std::string key_summary_string, const std::string &password)   {
     try {
+        // see function above for the exact structure of the input string
         map<string,string> summary_key_map;
         const vector<string> vector_key_name_vs_key_value = SplitString(key_summary_string, ";");
         for (const string &name_and_value_string : vector_key_name_vs_key_value)   {

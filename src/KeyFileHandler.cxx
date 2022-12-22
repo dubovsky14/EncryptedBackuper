@@ -28,7 +28,7 @@ void KeyFileHandler::generate_keys(unsigned int rsa_key_length) {
 };
 
 void KeyFileHandler::load_keys_from_file(const std::string &key_file, const std::string &password)  {
-    vector<string> lines_of_key_file = read_lines_of_text_file(key_file, 10);
+    const vector<string> lines_of_key_file = read_lines_of_text_file(key_file, 10);
     if (lines_of_key_file.size() != 4) {
         throw std::string("Unable to read key file: " + key_file);
     }
@@ -42,7 +42,7 @@ void KeyFileHandler::load_keys_from_file(const std::string &key_file, const std:
 };
 
 void KeyFileHandler::save_keys_to_file(const std::string &key_file, const std::string &password)    {
-    cpp_int password_hash_plus_private_key   = KeyEncryptionTool::encrypt_private_key(m_private_key, password, m_rsa_type);
+    const cpp_int password_hash_plus_private_key   = KeyEncryptionTool::encrypt_private_key(m_private_key, password, m_rsa_type);
 
     ofstream outfile;
     outfile.open(key_file);
