@@ -119,12 +119,12 @@ unsigned int SHA3Calculator::mod(int number, int modulo)   {
 
 void SHA3Calculator::iterate_over_message()    {
     const unsigned int input_block_size_in_uint32s = m_input_block_size_bits/32;
-    unsigned int message[input_block_size_in_uint32s];
+    unsigned int message_block[input_block_size_in_uint32s];
     unsigned int *state_as_32bit_uints = reinterpret_cast<unsigned int* >(m_state);
 
-    while(m_message_parser->get_block(message)) {
+    while(m_message_parser->get_block(message_block)) {
         for (unsigned int i = 0; i < input_block_size_in_uint32s; i++)   {
-            state_as_32bit_uints[i] = state_as_32bit_uints[i] ^ message[i];
+            state_as_32bit_uints[i] = state_as_32bit_uints[i] ^ message_block[i];
         }
         keccak_f_function();
     }

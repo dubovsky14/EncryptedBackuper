@@ -59,11 +59,9 @@ void EncryptedBackuperTests::SHA3_test_sample_strings(unsigned int sha_type)  {
 
 
     for (map<int,string> string_and_hashes : sample_hashes)  {
-        SHA3Calculator sha3_calculator(sha_type);
         const string input_string = string_and_hashes[0];
         const cpp_int hash_correct      = cpp_int(string_and_hashes[sha_type]);
-        sha3_calculator.hash_message(input_string);
-        const cpp_int hash_calculated = sha3_calculator.get_hash();
+        const cpp_int hash_calculated   = calculate_sha3_from_file(input_string, sha_type);
 
         cout << "Message: " << input_string << endl;
         cout << "Calculated hash: " << std::hex << hash_calculated << endl;
@@ -83,10 +81,8 @@ void EncryptedBackuperTests::SHA3_test_file(unsigned int sha_type, int argc, con
     cout << "Going to run the test for SHA3-" << sha_type << ".\n";
 
     const string file_address = argv[2];
-    const cpp_int hash_correct = cpp_int(string(argv[3]));
-    SHA3Calculator sha3_calculator(sha_type);
-    sha3_calculator.hash_file(file_address);
-    const cpp_int hash_calculated = sha3_calculator.get_hash();
+    const cpp_int hash_correct      = cpp_int(string(argv[3]));
+    const cpp_int hash_calculated   = calculate_sha3_from_file(file_address, sha_type);
 
     cout << "File: " << file_address << endl;
     cout << "Calculated hash: " << std::hex << hash_calculated << endl;
