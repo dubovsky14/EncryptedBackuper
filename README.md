@@ -85,6 +85,17 @@ The framework provides also additional way to encrypt, which checks all files in
 The framework looks at the text file with hashes. If all hashes match, it does not run the encryption.
 If the hash file does not exist, or if at least one file is changed, it runs the encryption and updates the file with hashes.
 
+How to encrypt automatically with each login
+---------------------------------
+
+The framework provides also automated way of back-up, which will copy the encrypted file to a remote address via ssh. In order to do that add the following to your .bash_profile:
+
+```
+<path to EncryptedBackuper>/bin/SystemServiceRunner <text file with RSA keys> <filelist> <address of the encrypted output file (without timestamp suffix)> <address of the text file where hashes will be stored> <ssh remote address, i.e. user@server:/address/>
+```
+
+This will check the files from filelist against their last update, if files were updated, it will run the encryption and copy the files to remote server.
+
 How to decrypt
 ---------------------------------
 
