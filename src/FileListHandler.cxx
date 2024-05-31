@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <algorithm>
+
+#include <filesystem>
 
 using namespace std;
 using namespace EncryptedBackuper;
@@ -30,8 +33,7 @@ void    FileListHandler::load_filelist_from_file(const std::string &filelist)   
             if (StartsWith(line, "#") || line.length() == 0)    {
                 continue;
             }
-            m_filelist_full_paths.push_back(line);
-            m_filelist_filenames_only.push_back(SplitString(line, "/").back());
+            add_address_to_filelist(line);
         }
         input_file.close();
     }
@@ -40,6 +42,25 @@ void    FileListHandler::load_filelist_from_file(const std::string &filelist)   
     }
 
     evaluate_file_sizes_from_disk();
+};
+
+void FileListHandler::add_address_to_filelist(const std::string &address)    {
+    const bool is_directory = std::filesystem::is_directory(address);
+    if (is_directory)   {
+        vector<string> addresses;
+        for (const auto & entry : std::filesystem::directory_iterator(address)) {
+            addresses.push_back(entry.path().string());
+        }
+        sort(addresses.begin(), addresses.end());
+
+        for (const string &entry : addresses) {
+            add_address_to_filelist(entry);
+        }
+    }
+    else {
+        m_filelist_full_paths.push_back(address);
+        m_filelist_filenames_only.push_back(SplitString(address, "/").back());
+    }
 };
 
 void    FileListHandler::evaluate_file_sizes_from_disk() {

@@ -6,7 +6,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/AES)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/AES/aes/)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17 REQUIRED)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS "-Wall -O3")
 

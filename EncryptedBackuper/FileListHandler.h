@@ -40,6 +40,8 @@ namespace EncryptedBackuper     {
 
             static std::vector<std::string>    get_hashes_from_reference_hash_file(const std::string &reference_hashes_file);
 
+            void add_address_to_filelist(const std::string &address);
+
 
     };
 }
