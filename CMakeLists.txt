@@ -17,23 +17,33 @@ add_library(EncryptedBackuperLib ${SOURCES} ${SOURCES_AES})
 
 file(GLOB CI_TESTS_SOURCES "CI_tests/src/*.cxx")
 
-add_executable(Encryptor "utils/Encryptor.cxx")
-add_executable(AutomatedEncryptor "utils/AutomatedEncryptor.cxx")
-add_executable(Decryptor "utils/Decryptor.cxx")
-add_executable(generate_key_file "utils/generate_key_file.cxx")
-add_executable(SystemServiceRunner "utils/SystemServiceRunner.cxx")
+
+# Find all .cxx files in the utils folder
+file(GLOB UTILS_SOURCES "utils/*.cxx")
+
+
+# Iterate over each .cxx file
+foreach(SOURCE_FILE ${UTILS_SOURCES})
+    # skip the tests file
+    if(${SOURCE_FILE} MATCHES "utils/tests.cxx")
+        continue()
+    endif()
+
+    # Get the filename without the extension
+    get_filename_component(EXECUTABLE_NAME ${SOURCE_FILE} NAME_WE)
+
+    # Add executable
+    add_executable(${EXECUTABLE_NAME} ${SOURCE_FILE})
+
+    # Add dependencies
+    add_dependencies(${EXECUTABLE_NAME}  EncryptedBackuperLib)
+
+    # Link libraries
+    target_link_libraries(${EXECUTABLE_NAME}  EncryptedBackuperLib)
+endforeach()
+
 add_executable(tests ${CI_TESTS_SOURCES} "utils/tests.cxx")
 
-add_dependencies(Encryptor EncryptedBackuperLib )
-add_dependencies(AutomatedEncryptor EncryptedBackuperLib )
-add_dependencies(Decryptor EncryptedBackuperLib )
 add_dependencies(tests EncryptedBackuperLib )
-add_dependencies(generate_key_file EncryptedBackuperLib )
-add_dependencies(SystemServiceRunner EncryptedBackuperLib )
 
-target_link_libraries(Encryptor EncryptedBackuperLib)
-target_link_libraries(AutomatedEncryptor EncryptedBackuperLib)
-target_link_libraries(Decryptor EncryptedBackuperLib)
 target_link_libraries(tests EncryptedBackuperLib)
-target_link_libraries(generate_key_file EncryptedBackuperLib)
-target_link_libraries(SystemServiceRunner EncryptedBackuperLib)
