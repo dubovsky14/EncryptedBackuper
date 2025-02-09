@@ -9,31 +9,20 @@ using boost::multiprecision::cpp_int;
 BinaryEncryptor::BinaryEncryptor(   const std::string &key_file,
                                     const std::string &filelist)    {
 
-    m_key_file    = key_file;
-
     // load list of files that is going to be encrypted
     m_file_list_handler.load_filelist_from_file(filelist);
 
-    // Load RSA keys from key_file
-    m_key_file_handler.load_keys_from_file(key_file, "");
-    m_key_encryption_tool.set_rsa_keys(m_key_file_handler.get_pq(),
-                                        m_key_file_handler.get_public_key(),
-                                        m_key_file_handler.get_private_key_encrypted(),
-                                        m_key_file_handler.get_rsa_type());
-
-    // Generate random AES key
-    const std::string input_files_hash_summary = m_file_list_handler.get_file_hash_summary();
-    m_aes_key = m_key_encryption_tool.generate_aes_key(input_files_hash_summary);
-
-    m_aes_wrapper = make_unique<AESWrapper>(m_aes_key, 256);
+    initialize(key_file);
 };
 
 BinaryEncryptor::BinaryEncryptor(const std::string &key_file, const std::vector<std::string> &files_to_enpcrypt) {
-    m_key_file    = key_file;
-
     // load list of files that is going to be encrypted
     m_file_list_handler.load_filelist(files_to_enpcrypt);
 
+    initialize(key_file);
+};
+
+void BinaryEncryptor::initialize(const std::string &key_file)  {
     // Load RSA keys from key_file
     m_key_file_handler.load_keys_from_file(key_file, "");
     m_key_encryption_tool.set_rsa_keys(m_key_file_handler.get_pq(),

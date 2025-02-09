@@ -29,10 +29,10 @@ namespace EncryptedBackuper     {
 
             std::unique_ptr<AESWrapper>         m_aes_wrapper           = nullptr;
 
+            void initialize(const std::string &key_file);
+
             boost::multiprecision::cpp_int m_aes_key;
             boost::multiprecision::cpp_int m_aes_key_encrypted;
-
-            std::string m_key_file;
 
             std::unique_ptr<std::ofstream> m_output_binary = nullptr;
 
