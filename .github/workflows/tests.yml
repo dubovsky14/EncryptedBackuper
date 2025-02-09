@@ -17,7 +17,7 @@ jobs:
               cmake ../.
               make
         name: upload_artifact
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: artifact-linux-build
           path: |
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -67,7 +67,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -83,7 +83,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -100,7 +100,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -116,7 +116,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -133,7 +133,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -152,7 +152,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -168,7 +168,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -187,7 +187,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
@@ -204,7 +204,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: Download linux build
         with:
           name: artifact-linux-build
