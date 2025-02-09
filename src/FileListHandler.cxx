@@ -21,6 +21,13 @@ FileListHandler::FileListHandler()  {
 
 };
 
+void    FileListHandler::load_filelist(const std::vector<std::string> &file_addresses)   {
+    for (const std::string &file_address : file_addresses) {
+        add_address_to_filelist(file_address);
+    }
+    evaluate_file_sizes_from_disk();
+};
+
 void    FileListHandler::load_filelist_from_file(const std::string &filelist)   {
     m_filelist_full_paths.clear();
     m_filelist_filenames_only.clear();

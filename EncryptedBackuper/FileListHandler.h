@@ -16,6 +16,8 @@ namespace EncryptedBackuper     {
 
             bool    files_are_up_to_date(const std::string &reference_hashes_file) const;
 
+            void    load_filelist(const std::vector<std::string> &file_addresses);
+
             void    load_filelist_from_string(const std::string &filelist_string);
 
             std::string                 dump_filelist_to_string()   const;
