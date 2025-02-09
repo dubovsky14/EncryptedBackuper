@@ -25,6 +25,7 @@ jobs:
                   bin/generate_key_file
                   bin/Decryptor
                   bin/Encryptor
+                  bin/EncryptSeparateFilesInFolder
           retention-days: 1
 
   rsa-1024-validation:
