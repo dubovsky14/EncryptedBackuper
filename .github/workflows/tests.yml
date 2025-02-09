@@ -236,9 +236,9 @@ jobs:
       - run:  |
               chmod u+x generate_key_file
               mkdir temp_test_output
-              ./generate_key_file 1024 temp_test_output/temp_key_file.txt <<< 1234567890
+              ./generate_key_file 1024 temp_key_file.txt <<< 1234567890
               chmod u+x EncryptSeparateFilesInFolder
-              ./EncryptSeparateFilesInFolder temp_test_output/temp_key_file.txt CI_tests/data/ temp_test_output/
+              ./EncryptSeparateFilesInFolder temp_key_file.txt CI_tests/data/ temp_test_output/
               chmod u+x Decryptor
               ./Decryptor temp_test_output/ temp_test_output/ <<< 1234567890
               chmod u+x tests
