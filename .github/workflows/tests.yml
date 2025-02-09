@@ -219,3 +219,27 @@ jobs:
               chmod u+x tests
               ./tests CompareFileHashes  CI_tests/data/example_filelist.txt   temp_test_output/example_filelist.txt
               ./tests CompareFileHashes  CI_tests/data/sample_binary_file.jpg temp_test_output/sample_binary_file.jpg
+
+  BinaryEncryptionAndDecryptionSeparateFiles:
+    runs-on: ubuntu-latest
+    needs: [build-linux]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - uses: actions/download-artifact@v4
+        name: Download linux build
+        with:
+          name: artifact-linux-build
+      - run:  |
+              chmod u+x generate_key_file
+              mkdir temp_test_output
+              ./generate_key_file 1024 temp_test_output/temp_key_file.txt <<< 1234567890
+              chmod u+x EncryptSeparateFilesInFolder
+              ./EncryptSeparateFilesInFolder temp_test_output/temp_key_file.txt CI_tests/data/ temp_test_output/
+              chmod u+x Decryptor
+              ./Decryptor temp_test_output/encrypted_file temp_test_output/ <<< 1234567890
+              chmod u+x tests
+              ./tests CompareFileHashes  CI_tests/data/example_filelist.txt   temp_test_output/example_filelist.txt
+              ./tests CompareFileHashes  CI_tests/data/sample_binary_file.jpg temp_test_output/sample_binary_file.jpg
