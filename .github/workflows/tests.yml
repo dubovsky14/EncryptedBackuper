@@ -240,7 +240,7 @@ jobs:
               chmod u+x EncryptSeparateFilesInFolder
               ./EncryptSeparateFilesInFolder temp_test_output/temp_key_file.txt CI_tests/data/ temp_test_output/
               chmod u+x Decryptor
-              ./Decryptor temp_test_output/encrypted_file temp_test_output/ <<< 1234567890
+              ./Decryptor temp_test_output/ temp_test_output/ <<< 1234567890
               chmod u+x tests
               ./tests CompareFileHashes  CI_tests/data/example_filelist.txt   temp_test_output/example_filelist.txt
               ./tests CompareFileHashes  CI_tests/data/sample_binary_file.jpg temp_test_output/sample_binary_file.jpg
