@@ -19,6 +19,11 @@ using namespace EncryptedBackuper;
 vector<string> get_files_in_folder(const std::string &folder_address)    {
     vector<string> result;
     for (const auto & entry : std::filesystem::directory_iterator(folder_address)) {
+        // skip directories:
+        if (std::filesystem::is_directory(entry.path().string()))   {
+            continue;
+        }
+
         result.push_back(entry.path().string());
     }
     sort(result.begin(), result.end());
